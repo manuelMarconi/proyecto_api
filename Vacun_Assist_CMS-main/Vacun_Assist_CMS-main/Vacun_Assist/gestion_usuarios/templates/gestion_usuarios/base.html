@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <h1 class="site-heading text-center text-white d-none d-lg-block">
+      
+            <span class="site-heading-lower">Vacun Assist</span>
+            </h1>
+            
+    </head>
+<body>
+
+    <div style= "text-align: right; margin-right: 100px;"> 
+          
+          {% if user.is_authenticated %}
+    
+          Hola {{user.username}} &nbsp; &nbsp; <a href="{% url 'cerrar_sesion' %}" style="color: black;"> Cerrar sesión </a>
+    
+          {% else %} 
+    
+          <a href="{% url 'iniciar_sesion' %}" style="color: black; "> Iniciar sesion </a> &nbsp; &nbsp; <a href="{% url 'registro' %}" style="color: black;" >  Registrate!</a>
+    
+          {% endif %}
+          
+    </div>
+
+    {% block content %}
+
+
+    {% endblock %}
+</body>
+</html>

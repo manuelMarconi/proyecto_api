@@ -1,0 +1,29 @@
+{% extends "gestion_usuarios/base.html" %}
+
+
+{% block content %}
+
+<html>
+    <body>
+        <form action="/iniciar_sesion" method="POST"> {% csrf_token %}
+            <p>
+                Email: <input type="text" name="email"> 
+            </p>
+    
+            <p>
+                Contraseña: <input type="text" name="contraseña"> 
+            </p>
+
+            <p>
+                Codigo: <input type="text" name="codigo"> 
+            </p>
+    
+            <input type="submit" value="Iniciar sesion">
+        </form>
+    </body>
+</html>
+
+
+
+{% endblock %}
+

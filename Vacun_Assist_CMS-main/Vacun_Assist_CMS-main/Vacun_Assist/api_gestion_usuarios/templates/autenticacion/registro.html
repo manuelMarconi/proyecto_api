@@ -1,0 +1,48 @@
+{% extends "gestion_usuarios/base.html" %}
+
+
+{% block content %}
+
+<html>
+    <body>
+        <form action="/registrarse" method="POST"> {% csrf_token %}
+
+            <p>
+                Nombre: <input type="text" name="nombre"> 
+            </p>
+
+            <p>
+                Apellido: <input type="text" name="apellido"> 
+            </p>
+
+            <p>
+                DNI: <input type="text" name="dni"> 
+            </p>
+
+            <p>
+                Fecha de nacimiento: <input type="text" name="fecha_nacimiento"> 
+            </p>
+
+            <p>
+                Direccion: <input type="text" name="direccion"> 
+            </p>
+    
+            <p>
+                Email: <input type="text" name="email"> 
+            </p>
+    
+        
+            <p>
+                Contraseña: <input type="text" name="contraseña1"> 
+            </p>
+
+            <p>
+                Por favor, repita la contraseña: <input type="text" name="contraseña2"> 
+            </p>
+    
+            <input type="submit" value="Registrarme">
+        </form>
+    </body>
+</html>
+
+{% endblock %}

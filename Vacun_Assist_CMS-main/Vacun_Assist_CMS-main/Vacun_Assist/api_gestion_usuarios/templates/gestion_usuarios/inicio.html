@@ -1,0 +1,33 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <body>
+        Bienvenidos a Vacun Assist
+
+
+        {% if user.is_authenticated %}
+            <p>                
+                <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
+            </p>
+            <p>                
+                <a href="{% url 'estatus_turno' %}"> Estatus de mis turnos</a>
+            </p> 
+
+            <p> Sacar turno:</p>
+            <p>  
+               <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
+            </p>
+            <p>
+                <a href="{% url 'fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
+            </p>   
+            <p>                
+                <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>
+            </p>
+        
+        {% endif %}
+
+    </body>
+</html>
+{% endblock %}
+
