@@ -4,6 +4,31 @@
 <html>
     
     <body >
+
+
+        {% if user.is_authenticated %}
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+          
+            <p>                
+                <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
+            </p>
+            <p>                
+                <a href="{% url 'estatus_turno' %}"> Estatus de mis turnos</a>
+            </p> 
+
+            <p> Sacar turno:</p>
+            <p>  
+               <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
+            </p>
+            <p>
+                <a href="{% url 'fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
+            </p>   
+            <p>                
+                <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>
+            </p>
+            <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
+        </span>
+        {% else %}
        
         <h1 font-family: 'Open Sans';
         font-size: 5px;
@@ -13,6 +38,8 @@
         > 
         Bienvenidos a Vacun Assist   </h1>  
         <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 230px">
+            <a href="{% url 'iniciar_sesion' %}" style="color: black; "> Iniciar sesion </a> &nbsp; &nbsp; <a href="{% url 'registro' %}" style="color: black;" >  Registrate!</a>
+    
             <em>
             <b>  
         <p >   <img src="https://statics-diariomedico.uecdn.es/cms/2021-04/0428%20vacunatorio.jpg"
@@ -31,26 +58,10 @@
              </b> 
 
         </span>
-       
-
-        {% if user.is_authenticated %}
-            <p>                
-                <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
-            </p>
-            <p>                
-                <a href="{% url 'estatus_turno' %}"> Estatus de mis turnos</a>
-            </p> 
-
-            <p> Sacar turno:</p>
-            <p>  
-               <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
-            </p>
-            <p>
-                <a href="{% url 'fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
-            </p>   
-            <p>                
-                <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>
-            </p>
+    
+     
+          
+        
         
         {% endif %}
 
