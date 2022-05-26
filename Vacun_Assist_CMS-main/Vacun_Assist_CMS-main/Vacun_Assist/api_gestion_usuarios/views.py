@@ -14,6 +14,7 @@ from django.http.response import JsonResponse
 import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 
 
@@ -49,7 +50,9 @@ def registro(request):
             #Guardar nuevo usuario en la base de datos
             
             Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo='0000')
-            
+            #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
+            user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
+            user.save()
             #Envio de email
             mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: 0000" #0000 es parcial
             send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
@@ -82,15 +85,16 @@ def iniciar_sesion(request):
             
             #utilice una lista(q siempre tiene long o 0 o 1) por que de la forma anterior no entraba al if correctamente, se puede cambiar para solo extraer un objeto.
             if len(us)>0:
-                u=infForm['email']
-                p=infForm['contraseña']
-                #problema en cuestion  (ya intente con (request, username=u,password=p))
-                us=authenticate(username=u, password=p)
-                if us is not None:  #aca es donde no entra
-                    login(request, us)
+                username=infForm['email']
+                password=infForm['contraseña']
+                #autenticate() devuelve un objeto de tipo User, por eso no accedia al if.
+                #en la base de datos ademas de guardar un objeto de tipo Usuario, tambien guarda un objeto de tipo User para poder autenticar aca
+                user=authenticate(username=username, password=password)
+                if user is not None:  #aca es donde no entra
+                    login(request, user)
                     return redirect('inicio')
                 else:
-                    return JsonResponse({'message':'el usuario no se autentico correctamente'})
+                    return JsonResponse({'Error':'el usuario no se autentico correctamente'})
             else:
                 return JsonResponse({'Error':'Usuario y/o contraseña incorrectos'})
     else:
