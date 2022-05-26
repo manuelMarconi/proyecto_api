@@ -1,5 +1,5 @@
-from typing_extensions import Required
 from django.db import models
+
 
 # Create your models here.
 
@@ -20,7 +20,7 @@ class Turno(models.Model):
     fecha=models.DateField(blank=True, null=True)
     hora=models.TimeField(blank=True, null=True)
     vacuna=models.CharField(max_length=40)
-    usuario_a_vacunar=models.CharField(max_length=8)
+    usuario_a_vacunar=models.CharField(max_length=8, blank=False, null=False)
     #usuario_a_vacunar=models.Usuario() #puede ser un campo de tipo usuario, o un campo de tipo dni 
     vacunatorio=models.CharField(max_length=40)
     #estado=models.CharField(max_length=40)

@@ -3,12 +3,28 @@
 {% block content %}
 <html>
     <body>
-        Cargar info coviddd
+        Cargar info covid
 
 
         <p>                
             <a href="{% url 'inicio' %}">Volver a inicio</a>
         </p> 
+
+        <p> Subir historial de vacunacion: Vacuna del coronavirus. </p>
+
+        <p> Si se aplico alguna dosis: </p>
+
+        <form action="/covid" method="POST"> {% csrf_token %}
+            <p> 
+                Cantidad de dosis: <input type="text" name="cantidad_dosis">
+            </p>
+
+            <p> 
+                Enfermedades: <input type="text" name="paciente_riesgo">
+            </p>
+    
+            <input type="submit" value="Pedir turno">
+        </form>
     </body>
 </html>
 {% endblock %}
