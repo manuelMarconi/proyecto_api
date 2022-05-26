@@ -9,6 +9,17 @@
         <p>                
             <a href="{% url 'inicio' %}">Volver a inicio</a>
         </p> 
+        <p> Subir historial de vacunacion: Vacuna de la fiebre amarilla. </p>
+
+        <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
+
+        <form action="/fiebre_a" method="POST"> {% csrf_token %}
+            <p>
+                Fecha de la aplicación de la vacuna: <input type="text" name="fecha_aplicacion_fiebre_a"> 
+            </p>
+    
+            <input type="submit" value="Pedir turno">
+        </form>
     
     </body>
 </html>
