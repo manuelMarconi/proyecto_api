@@ -122,9 +122,38 @@ def cargar_info_gripe(request):
 
 
 def modificar_perfil(request):
-    #No se puede cambiar todos los datos.
-    #Seria reemplazar en la base de datos, los datos viejos con los datos nuevos
-    return render(request, "gestion_usuarios/modificar_perfil.html")
+    if request.method=="POST":
+        miFormulario=FormularioAutenticacion(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+
+            #Validar que este el mail en la base de datos
+            #Validar contraseña
+            #Validar codigo
+
+            #Se podrian chequear todos los campos por separado
+            us=list(Usuario.objects.filter(email=infForm['email']))
+            
+            #utilice una lista(q siempre tiene long o 0 o 1) por que de la forma anterior no entraba al if correctamente, se puede cambiar para solo extraer un objeto.
+            if len(us)>0:
+                username=infForm['email']
+                password=infForm['contraseña']
+                #autenticate() devuelve un objeto de tipo User, por eso no accedia al if.
+                #en la base de datos ademas de guardar un objeto de tipo Usuario, tambien guarda un objeto de tipo User para poder autenticar aca
+                user=authenticate(username=username, password=password)
+                if user is not None:  #aca es donde no entra
+                    login(request, user)
+                    return redirect('inicio')
+                else:
+                    return JsonResponse({'Error':'el usuario no se autentico correctamente'})
+            else:
+                return JsonResponse({'Error':'Usuario y/o contraseña incorrectos'})
+    else:
+        #Si entra al else, seria el formulario vacio, para que llene los datos
+        miFormulario=FormularioAutenticacion()
+
+   
+    return render(request, "gestion_usuarios/modificar_perfil.html", {"form": miFormulario})
 
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos

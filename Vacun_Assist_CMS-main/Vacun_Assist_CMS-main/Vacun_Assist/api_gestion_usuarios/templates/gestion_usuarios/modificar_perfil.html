@@ -3,7 +3,55 @@
 {% block content %}
 <html>
     <body>
-        Modificar perfil
+        <form action="/registrarse" method="POST"> {% csrf_token %}
+            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+            <em>
+                <p>
+                    Modifique los datos que le sean Necesarios </br>
+                    Y los que no desea actualizar solo complete con su informacion
+                </p>
+            </em>
+            
+
+            <p>
+                Nombre: <input type="text" name="nombre"> 
+            </p>
+
+            <p>
+                Apellido: <input type="text" name="apellido"> 
+            </p>
+
+            <p>
+                DNI: <input type="text" name="dni"> 
+            </p>
+
+            <p>
+                Fecha de nacimiento: <input type="text" name="fecha_nacimiento"> 
+            </p>
+
+            <p>
+                Direccion: <input type="text" name="direccion"> 
+            </p>
+    
+            <p>
+                Email: <input type="text" name="email"> 
+            </p>
+    
+        
+            <p>
+                Contraseña: <input type="text" name="contraseña1"> 
+            </p>
+
+            <p>
+                Por favor, repita la contraseña: <input type="text" name="contraseña2"> 
+            </p>
+    
+            <input type="submit" value="Modificar">
+
+            <p>                
+                <a href="{% url 'inicio' %}">Volver a inicio</a>
+            </p> 
+        </form>
     </body>
 </html>
 {% endblock %}
