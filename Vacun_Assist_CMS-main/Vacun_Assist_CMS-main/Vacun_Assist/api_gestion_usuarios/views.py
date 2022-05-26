@@ -6,8 +6,8 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioRegistro
-from api_gestion_usuarios.models import Usuario
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe
+from api_gestion_usuarios.models import Usuario, Turno
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -15,8 +15,7 @@ import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-
-
+import datetime
 
 # Create your views here.
 def inicio(request):
@@ -105,20 +104,176 @@ def iniciar_sesion(request):
     return render(request, "autenticacion/login.html", {"form": miFormulario})
 
 
+def calcularEdad(fecha): 
+    fecha_actual = datetime.datetime.today() 
+    edad = fecha_actual.year - fecha.year - ((fecha_actual.month, fecha_actual.day) < (fecha.month, fecha.day)) 
+  
+    return edad 
+
+
+
 def cargar_info_covid(request):
 
+    if request.method=="POST":
+        miFormulario=FormularioRegistro(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data
+             
+            #Busco la edad del usuario
+            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
+            usuario_edad= calcularEdad(usuario_fecha)
 
-    return render(request, "cargar_info/info_covid.html")
+
+            #request.user es la sesion del usuario
+            #supuestamente sirve: 
+            #request.user[campo]
+
+            if infForm['cantidad_dosis'] == 2:
+                pass
+            else:
+                if usuario_edad < 60:
+
+                    if infForm['paciente_riesgo'] is not None:
+                        pass
+                        #Menor de 60, con riesgo
+                        #Chequeo que no tenga turno de covid previo
+                        #Que tenga menos de dos dosis
+                        #Asigno el turno
+
+                        turno=Turno(fecha= '', hora= '', vacuna='coronavirus', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                        turno.save()
+                        
+                        #Agrego el turno al usuario
+
+                    else:
+                        #Menor de 60, sin riesgo
+                        #Chequeo que no tenga turno de covid previo
+                        #Que tenga menos de dos dosis
+                        #El turno lo asigna manualmente el administrador
+
+                        #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus
+                        pass
+
+                    if usuario_edad < 18:
+                        #Menor de 18
+                        #No se vacunan menores de edad
+                        pass
+                
+                else: 
+                    #Mayor de 60
+                    #Chequeo que no tenga turno de covid previo
+                    #Que tenga menos de dos dosis
+                    #Se asigna un turno
+
+                    #fecha = datetime.date(2021, 7, 22)
+                    #hora = datetime.time(21, 15)
+                    #hora.isoformat() : '21:15:00'
+
+                    dia_actual=datetime.datetime.now()
+                    fecha_turno = datetime.date(dia_actual.year, dia_actual.month, (dia_actual.day + 1))
+                    hora_turno= datetime.time(12,15)
+
+
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                    turno.save()
+      
+            
+            return redirect('inicio')
+    else:
+        miFormulario=FormularioCovid()
+    return render(request, "cargar_info/info_covid.html", {"form": miFormulario})
+
 
 def cargar_info_fiebre_a(request):
 
+    if request.method=="POST":
+        miFormulario=FormularioFiebreA(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data
 
-    return render(request, "cargar_info/info_fiebre_a.html")
+            #Busco la edad del usuario
+            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
+            usuario_edad= calcularEdad(usuario_fecha)
+
+
+            if infForm['fecha_aplicacion_fiebre_a'] is not None:
+                if usuario_edad < 60:
+                    #Menor de 60
+                    #El turno lo asigna el administrador, se manda un "pedido"
+                    pass
+                else: 
+                    #Mayor de 60
+                    #No se puede vacunar 
+                    pass
+            else:
+                pass
+
+
+            #return redirect('inicio')
+            return render(request, "cargar_info/turno_exito.html")
+    else:
+        miFormulario=FormularioFiebreA()
+    return render(request, "cargar_info/info_fiebre_a.html", {"form": miFormulario})
+
 
 def cargar_info_gripe(request): 
 
+    if request.method=="POST":
+        miFormulario=FormularioGripe(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data
 
-    return render(request, "cargar_info/info_gripe.html")
+            #Busco la edad del usuario
+            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
+            usuario_edad= calcularEdad(usuario_fecha)
+
+
+            if infForm['fecha_aplicacion_gripe'] is not None:
+                if usuario_edad < 60:
+                    #Menor de 60
+                    #Asigno turno a 6 meses
+
+                    #fecha = datetime.date(2021, 7, 22)
+                    #hora = datetime.time(21, 15)
+                    #hora.isoformat() : '21:15:00'
+
+                    dia_actual=datetime.datetime.now()
+                    fecha_turno = datetime.date(dia_actual.year, dia_actual.month, (dia_actual.day + 1))
+                    hora_turno= datetime.time(12,15)
+
+                    #Esto va a depender de los turnos disponibles, tendriamos que acceder a los turnos y buscar una fecha libre dependiendo de cada vacuna
+
+                    turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+
+
+                    return render(request, "cargar_info/turno_exito.html")
+                else: 
+                    #Mayor de 60
+                    #Asigno turno a 3 meses
+
+                    #fecha = datetime.date(2021, 7, 22)
+                    #hora = datetime.time(21, 15)
+                    #hora.isoformat() : '21:15:00'
+
+                    dia_actual=datetime.datetime.now()
+                    fecha_turno = datetime.date(dia_actual.year, dia_actual.month, (dia_actual.day + 1))
+                    hora_turno= datetime.time(12,15)
+
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                    turno.save()
+
+                    return render(request, "cargar_info/turno_exito.html")
+            else:
+                pass
+        
+             
+        
+            
+            return redirect('inicio')
+    else:
+        miFormulario=FormularioGripe()
+    return render(request, "cargar_info/info_gripe.html", {"form": miFormulario})
+
 
 
 def modificar_perfil(request):

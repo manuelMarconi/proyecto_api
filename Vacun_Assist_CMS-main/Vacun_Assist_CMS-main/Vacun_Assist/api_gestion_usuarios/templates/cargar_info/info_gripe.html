@@ -3,7 +3,17 @@
 {% block content %}
 <html>
     <body>
-        Cargar info de la gripe
+        <p> Subir historial de vacunacion: Vacuna de la gripe. </p>
+
+        <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
+
+        <form action="/gripe" method="POST"> {% csrf_token %}
+            <p>
+                Fecha de la aplicación de la vacuna: <input type="text" name="fecha_aplicacion_gripe"> 
+            </p>
+    
+            <input type="submit" value="Pedir turno">
+        </form>
         
     </body>
 </html>
