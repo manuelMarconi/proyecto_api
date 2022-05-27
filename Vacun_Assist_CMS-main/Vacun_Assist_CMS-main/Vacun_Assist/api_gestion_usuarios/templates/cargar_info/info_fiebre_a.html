@@ -3,24 +3,25 @@
 {% block content %}
 <html>
     <body>
-        Cargar info de la fiebre amarilla
 
-
-        <p>                
-            <a href="{% url 'inicio' %}">Volver a inicio</a>
-        </p> 
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+      
         <p> Subir historial de vacunacion: Vacuna de la fiebre amarilla. </p>
 
         <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
 
         <form action="/fiebre_a" method="POST"> {% csrf_token %}
-            <p>
-                Fecha de la aplicación de la vacuna: <input type="text" name="fecha_aplicacion_fiebre_a"> 
+            <p> 
+                Ponga "si" si posee la vacuna, "no" en caso contrario: <input type="text" name="si_o_no">
             </p>
     
             <input type="submit" value="Pedir turno">
+
+            <p>                
+                <a href="{% url 'inicio' %}">Volver a inicio</a>
+            </p> 
         </form>
-    
+    </span>
     </body>
 </html>
 {% endblock %}

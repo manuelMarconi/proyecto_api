@@ -38,15 +38,17 @@ def registro(request):
                 messages.add_message(request, messages.INFO, 'ERROR el email ya se encuentra registrado!')
                 return render(request, "autenticacion/registro.html")
             #Validar que las contraseñas son iguales 
-            if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']>7: #valido q sea mayor a 7
+            if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']<8: #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html")
 
             #Validar el DNI con el renaper(pendiente..)
             #codigo_unico=random.randint(1000,9999) #Esto esta mal, seria tener en la base de datos algo para ir chequeando esto
     
-            #infFrom['dni'] == 8
-            if  (infForm['dni']): #verifico que el dni tenga 8 digitos
+            if (infForm['dni']): #verifico que el dni tenga 8 digitos
+
+                # ACA SE DEBE TRAER EL CODIGO 
+
                 Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo='0000')
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
@@ -54,15 +56,21 @@ def registro(request):
                 #Envio de email
                 mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: 0000" #0000 es parcial
                 send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
+                messages.add_message(request, messages.INFO, 'Registro Exitoso')
+                login(request, user)
+                return redirect('inicio')
                 
 
             else:
                 messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
                 return render(request, "autenticacion/registro.html")
-            
-            return redirect('inicio')
+        else:
+            messages.add_message(request, messages.INFO, 'ERROR formulario invalido!')
+            return render(request, "autenticacion/registro.html")    
+          #  return redirect('inicio')
     else:
         miFormulario=FormularioRegistro()
+    messages.add_message(request, messages.INFO, 'ENTRA ACA')
     return render(request, "autenticacion/registro.html", {"form": miFormulario})
 
 
@@ -144,13 +152,17 @@ def cargar_info_covid(request):
             #request.sessions[]
 
             if infForm['cantidad_dosis'] == 2:
+                messages.add_message(request, messages.ERROR, 'ERROR No puede recibir las vacunas porque tiene todas las dosis correspondientes') 
+                return render(request,"cargar_info/info_covid.html")
                 #Mensaje: No puede recibir las vacunas porque tiene todas las dosis correspondientes
-                pass
+            
+            if usuario_edad < 18:
+                messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
+                return render(request,"inicio")
             else:
                 if usuario_edad < 60:
 
-                    if infForm['paciente_riesgo'] is not None:
-                        pass
+                    if infForm['si_o_no'] == 'si':
                         #Menor de 60, con riesgo
                         #Chequeo que no tenga turno de covid previo (accede a lista turno de Usuario)
                         #Asigno el turno
@@ -163,7 +175,8 @@ def cargar_info_covid(request):
                         turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
                         turno.save()
 
-
+                        messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                        return render(request,"inicio")
                         #Agrego el turno al usuario
                         #Mensaje: Su turno ha sido reservado
                     else:
@@ -174,12 +187,9 @@ def cargar_info_covid(request):
                         #Mensaje: Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno
 
                         #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
-                        pass
-
-                    if usuario_edad < 18:
-                        #Menor de 18
-                        #No se vacunan menores de edad
-                        pass
+                        messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
+                        return render(request,"inicio")
+                    
                 
                 else: 
                     #Mayor de 60
@@ -201,9 +211,10 @@ def cargar_info_covid(request):
                 
                     #Asignar el turno al usuario
                     #Mensaje: Su turno ha sido reservado
-
+                    messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                    return render(request,"inicio")
             
-            return redirect('inicio')
+      #  return render(request, "cargar_info/info_covid.html")
     else:
         miFormulario=FormularioCovid()
     return render(request, "cargar_info/info_covid.html", {"form": miFormulario})
@@ -226,20 +237,24 @@ def cargar_info_fiebre_a(request):
             direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
 
-            if infForm['fecha_aplicacion_fiebre_a'] is not None:
+      #      if infForm['fecha_aplicacion_fiebre_a'] is not None:
+            if infForm['si_o_no'] == 'si':
                 if usuario_edad < 60:
                     #Menor de 60
                     #El turno lo asigna el administrador, se manda un "pedido"
                     #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna de la fiebre amarilla(El listado no es para esta demo)
 
                     #Mensaje: Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno
-                    pass
+                    messages.add_message(request, messages.INFO, ' Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno!')
+                    return render(request, "inicio")
                 else: 
                     #Mayor de 60
                     #No se puede vacunar 
-                    pass
+                    messages.add_message(request, messages.INFO, ' Usted es mayor de 60. No se puede vacunar contra la Fiebre Amarilla!')
+                    return render(request, "inicio")
+                
             else:
-                pass
+                return render(request, "inicio")
 
 
     else:
@@ -270,8 +285,8 @@ def cargar_info_gripe(request):
             #fecha_prueba = datetime.date(dia_actual.year, (dia_actual.month+6), (dia_actual.day + 1))
             #usuario_edad= calcularEdad(fecha_prueba)
 
-
-            if infForm['fecha_aplicacion_gripe'] is not None:
+            # falta validar cuando paso menos de 12 meses y pide de nuevo la vacuna
+            if infForm['fecha_aplicacion_gripe'] is not None: # que se verifica aca??
                 if usuario_edad < 60:
                     #Menor de 60
                     #Asigno turno a 6 meses
@@ -313,9 +328,12 @@ def cargar_info_gripe(request):
                     #Asignar el turno al usuario
                     #Mensaje: Su turno ha sido reservado
             else:
-                pass
+                messages.add_message(request, messages.INFO, 'Cargue el formulario') 
+                return render(request,"cargar_info/info_gripe.html")  
         
-             
+        else:
+            messages.add_message(request, messages.INFO, 'Formulario Invalido') 
+            return render(request,"cargar_info/info_gripe.html")     
         
             
             return redirect('inicio')

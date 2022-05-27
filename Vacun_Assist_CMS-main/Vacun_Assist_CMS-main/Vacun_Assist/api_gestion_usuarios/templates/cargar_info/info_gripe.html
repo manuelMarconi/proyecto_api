@@ -3,13 +3,9 @@
 {% block content %}
 <html>
     <body>
-        Cargar info de la gripe
 
-
-
-        <p>                
-            <a href="{% url 'inicio' %}">Volver a inicio</a>
-        </p> 
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+     
         <p> Subir historial de vacunacion: Vacuna de la gripe. </p>
 
         <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
@@ -20,8 +16,12 @@
             </p>
     
             <input type="submit" value="Pedir turno">
+
+            <p>                
+                <a href="{% url 'inicio' %}">Volver a inicio</a>
+            </p> 
         </form>
-        
+    </span>
     </body>
 </html>
 {% endblock %}
