@@ -1,5 +1,7 @@
 from django.db import models
 
+#from localflavor.es.forms import ESIdentityCardNumberField, ESPhoneNumberField, ESProvinceField
+
 # Create your models here.
 
 class Usuario (models.Model):
