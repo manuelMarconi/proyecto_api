@@ -45,7 +45,8 @@ def registro(request):
             #Validar el DNI con el renaper(pendiente..)
             #codigo_unico=random.randint(1000,9999) #Esto esta mal, seria tener en la base de datos algo para ir chequeando esto
     
-            if  (infForm['dni'] == int(8)): #verifico que el dni tenga 8 digitos
+            #infFrom['dni'] == 8
+            if  (infForm['dni']): #verifico que el dni tenga 8 digitos
                 Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo='0000')
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
@@ -126,13 +127,21 @@ def cargar_info_covid(request):
             infForm=miFormulario.cleaned_data
              
             #Busco la edad del usuario
-            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
-            usuario_edad= calcularEdad(usuario_fecha)
+
+            us=list(Usuario.objects.filter(id=request.user.id))
+
+
+            fecha_nac=us[int(0)].fecha_nacimiento
+            dni=us[int(0)].dni
+            direc=us[int(0)].direccion
+            usuario_edad=calcularEdad(fecha_nac)
 
 
             #request.user es la sesion del usuario
             #supuestamente sirve: 
-            #request.user[campo]
+            #request.user[]
+            #request.sessions.user[]
+            #request.sessions[]
 
             if infForm['cantidad_dosis'] == 2:
                 #Mensaje: No puede recibir las vacunas porque tiene todas las dosis correspondientes
@@ -151,7 +160,7 @@ def cargar_info_covid(request):
                         hora_turno= datetime.time(12,15)
 
 
-                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
                         turno.save()
 
 
@@ -187,7 +196,7 @@ def cargar_info_covid(request):
                     hora_turno= datetime.time(12,15)
 
 
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
                     turno.save()
                 
                     #Asignar el turno al usuario
@@ -208,9 +217,14 @@ def cargar_info_fiebre_a(request):
             infForm=miFormulario.cleaned_data
 
             #Busco la edad del usuario
-            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
-            usuario_edad= calcularEdad(usuario_fecha)
 
+            us=list(Usuario.objects.filter(id=request.user.id))
+
+
+            fecha_nac=us[int(0)].fecha_nacimiento
+            dni=us[int(0)].dni
+            direc=us[int(0)].direccion
+            usuario_edad=calcularEdad(fecha_nac)
 
             if infForm['fecha_aplicacion_fiebre_a'] is not None:
                 if usuario_edad < 60:
@@ -241,8 +255,20 @@ def cargar_info_gripe(request):
             infForm=miFormulario.cleaned_data
 
             #Busco la edad del usuario
-            usuario_fecha=request.user['fecha_nacimiento'] #dudoso
-            usuario_edad= calcularEdad(usuario_fecha)
+            #usuario_fecha=request.user['fecha_nacimiento'] #dudoso
+            #usuario_edad= calcularEdad(usuario_fecha)
+            #usuario=Usuario.objects.filter(id=request.user.id)
+            
+            us=list(Usuario.objects.filter(id=request.user.id))
+
+
+            fecha_nac=us[int(0)].fecha_nacimiento
+            dni=us[int(0)].dni
+            direc=us[int(0)].direccion
+            usuario_edad=calcularEdad(fecha_nac)
+            #dia_actual=datetime.datetime.now()
+            #fecha_prueba = datetime.date(dia_actual.year, (dia_actual.month+6), (dia_actual.day + 1))
+            #usuario_edad= calcularEdad(fecha_prueba)
 
 
             if infForm['fecha_aplicacion_gripe'] is not None:
@@ -260,8 +286,11 @@ def cargar_info_gripe(request):
 
                     #Esto va a depender de los turnos disponibles, tendriamos que acceder a los turnos y buscar una fecha libre dependiendo de cada vacuna
 
-                    turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                    turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
+                    #turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar='41670882', vacunatorio='Zona municipalidad')
                     turno.save()
+
+
 
                     #Asignar el turno al usuario
                     #Mensaje: Su turno ha sido reservado

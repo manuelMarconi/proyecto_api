@@ -1,21 +1,27 @@
 from django.db import models
 
-#from localflavor.es.forms import ESIdentityCardNumberField, ESPhoneNumberField, ESProvinceField
 
 # Create your models here.
 
-
+centros_vacunacion = (
+    ("Zona municipalidad", "51 e/ 10  y 11 nro 770"),
+    ("Zona cementerio", "138 e/ 73 y 74 nro 2035"),
+    ("Zona terminal de omnibus", "3 e/ 41 y 42 nro 480"),
+)
 
 class Usuario (models.Model):
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
     dni=models.CharField(max_length=8)
     fecha_nacimiento=models.DateField()
-    direccion=models.CharField(max_length=30)
+    direccion=models.CharField(max_length=30, choices=centros_vacunacion)
     email=models.EmailField()
     contraseña=models.CharField(max_length=60)
     codigo=models.CharField(max_length=4)
     #Falta una lista de turnos, que pertenecen al usuario, puede estar vacia.
+    #turno_coronavirus=models.CharField(blank=True, null=True)
+    #turno_fiebre_a=models.CharField(blank=True, null=True)
+    #turno_gripe=models.CharField(blank=True, null=True)
 
 class Turno(models.Model):
     fecha=models.DateField(blank=True, null=True)

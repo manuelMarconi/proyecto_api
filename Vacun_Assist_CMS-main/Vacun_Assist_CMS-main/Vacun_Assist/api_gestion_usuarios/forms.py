@@ -1,3 +1,4 @@
+from unittest.util import _MAX_LENGTH
 from django import forms
 
 centros_vacunacion = (
@@ -28,7 +29,7 @@ class FormularioAutenticacion(forms.Form):
 class FormularioCovid(forms.Form):
     #Cantidad de dosis aplicadas    
     cantidad_dosis=forms.IntegerField(max_value=2,min_value=0)
-    paciente_riesgo=forms.IntegerField(max_value=1, min_value=0)
+    paciente_riesgo=forms.Textarea()
 
 class FormularioFiebreA(forms.Form):
     #En que año se aplico
