@@ -31,3 +31,6 @@ class Turno(models.Model):
     #usuario_a_vacunar=models.Usuario() #puede ser un campo de tipo usuario, o un campo de tipo dni 
     vacunatorio=models.CharField(max_length=40)
     #estado=models.CharField(max_length=40)
+
+    def __str__(self):
+        return 'Turno de %s para la vacuna: %s. En el vacunatorio %s, el día %s a la hora %s' % (self.usuario_a_vacunar, self.vacuna, self.vacunatorio, self.fecha, self.hora)

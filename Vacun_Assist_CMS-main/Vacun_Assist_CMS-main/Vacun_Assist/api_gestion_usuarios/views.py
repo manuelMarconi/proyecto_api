@@ -377,4 +377,14 @@ def modificar_perfil(request):
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
 
-    return render(request, "gestion_usuarios/estatus_turno.html")
+    #Esto devuelve DNI del usuario
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+
+    #Busco en la lista turnos, los turnos que corresponden al usuario
+    #Puede tener hasta tres turnos, o no tener ninguno
+    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+
+
+    return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": us[int(0)]})
