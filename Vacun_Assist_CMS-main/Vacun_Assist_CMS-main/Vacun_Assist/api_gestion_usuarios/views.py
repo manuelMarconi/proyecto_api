@@ -354,7 +354,7 @@ def cargar_info_gripe(request):
 
 def modificar_perfil(request):
     if request.method=="POST":
-        miFormulario=FormularioAutenticacion(request.POST)
+        miFormulario=FormularioRegistro(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
 
@@ -363,16 +363,14 @@ def modificar_perfil(request):
             #Validar codigo
 
             us=list(Usuario.objects.filter(email=infForm['email']))
-            
             if len(us)>0:  # NO ENTRA ACA
-                username=infForm['email']
-                password=infForm['contraseña']
-                dni=infForm['dni']
-                if  (dni != 8):
-                    messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
-                    return render(request, "gestion_usuarios/modificar_perfil.html")
-
-                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo='0000')
+                usuario=us[0]
+                usuario.email=infForm['email']
+                usuario.contraseña=infForm['contraseña1']
+                usuario.direccion=infForm['direccion']
+                usuario.nombre=infForm['nombre']
+                usuario.apellido=infForm['apellido']
+                usuario.save()
                 return redirect('inicio')
             else:
                 messages.add_message(request, messages.ERROR, 'ERROR gmail incorrecto')
@@ -380,7 +378,7 @@ def modificar_perfil(request):
         else:
               #Si entra, seria el formulario vacio, para que llene los datos
             miFormulario=FormularioAutenticacion()
-
+            return JsonResponse({"Error": "no paso formulario"})
     return render(request, "gestion_usuarios/modificar_perfil.html")
 
 def estatus_turno(request):
