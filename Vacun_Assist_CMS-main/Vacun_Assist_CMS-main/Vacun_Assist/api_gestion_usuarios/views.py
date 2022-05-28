@@ -56,7 +56,7 @@ def registro(request):
                 user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
                 user.save()
                 #Envio de email
-                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "
+                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio)
                 send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro Exitoso')
                 login(request, user)
@@ -70,7 +70,6 @@ def registro(request):
           #  return redirect('inicio')
     else:
         miFormulario=FormularioRegistro()
-    messages.add_message(request, messages.INFO, 'ENTRA ACA')
     return render(request, "autenticacion/registro.html", {"form": miFormulario})
 
 
