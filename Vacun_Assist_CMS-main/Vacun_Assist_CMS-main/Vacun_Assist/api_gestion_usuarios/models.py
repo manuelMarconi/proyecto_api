@@ -34,3 +34,6 @@ class Turno(models.Model):
 
     def __str__(self):
         return 'Turno de %s para la vacuna: %s. En el vacunatorio %s, el día %s a la hora %s' % (self.usuario_a_vacunar, self.vacuna, self.vacunatorio, self.fecha, self.hora)
+
+class Codigos(models.Model):
+    codigo=models.CharField(max_length=4)

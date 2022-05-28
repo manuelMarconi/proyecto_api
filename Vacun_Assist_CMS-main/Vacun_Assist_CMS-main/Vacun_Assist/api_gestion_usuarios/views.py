@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
 from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe
-from api_gestion_usuarios.models import Usuario, Turno
+from api_gestion_usuarios.models import Codigos, Usuario, Turno
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -42,19 +42,19 @@ def registro(request):
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html")
 
-            #Validar el DNI con el renaper(pendiente..)
-            #codigo_unico=random.randint(1000,9999) #Esto esta mal, seria tener en la base de datos algo para ir chequeando esto
     
-            if (infForm['dni']): #verifico que el dni tenga 8 digitos
-
-                # ACA SE DEBE TRAER EL CODIGO 
-
-                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo='0000')
+            if (len(infForm['dni'])==8): #verifico que el dni tenga 8 digitos, simulacion de renaper
+                
+                
+                codAleatorio=generarCodigoAleatorio()
+                Codigos.objects.create(codigo=codAleatorio)
+                
+                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo=codAleatorio)
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
                 user.save()
                 #Envio de email
-                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: 0000" #0000 es parcial
+                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "
                 send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro Exitoso')
                 login(request, user)
@@ -118,6 +118,15 @@ def iniciar_sesion(request):
     
     return render(request, "autenticacion/login.html", {"form": miFormulario})
 
+def generarCodigoAleatorio():
+    aux=False
+    while aux==False:
+        codigo_unico=random.randint(1000,9999)
+        usuario=list(Codigos.objects.filter(codigo=codigo_unico))
+        if len(usuario)==0:
+            aux=True
+    return codigo_unico
+        
 
 def calcularEdad(fecha): 
     fecha_actual = datetime.datetime.today() 
