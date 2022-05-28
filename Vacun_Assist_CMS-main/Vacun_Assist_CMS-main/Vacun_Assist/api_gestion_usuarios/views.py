@@ -20,6 +20,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 import datetime
 
+# prueba carla
+
 # Create your views here.
 def inicio(request):
     return render(request, "gestion_usuarios/inicio.html")
