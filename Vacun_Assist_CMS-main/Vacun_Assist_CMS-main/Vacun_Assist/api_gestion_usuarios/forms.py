@@ -33,7 +33,7 @@ class FormularioCovid(forms.Form):
 
 class FormularioFiebreA(forms.Form):
     #En que año se aplico, no se usa
-    fecha_aplicacion_fiebre_a=forms.DateField()
+    #fecha_aplicacion_fiebre_a=forms.DateField()
     si_o_no=forms.CharField(max_length=10)
 
 

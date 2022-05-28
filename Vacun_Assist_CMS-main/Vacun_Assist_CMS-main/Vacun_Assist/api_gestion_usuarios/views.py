@@ -275,24 +275,22 @@ def cargar_info_fiebre_a(request):
 
 
             fecha_nac=us[int(0)].fecha_nacimiento
-            dni=us[int(0)].dni
-            direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
 
-            se_aplico=infForm['si_o_no']
 
-      #      if infForm['fecha_aplicacion_fiebre_a'] is not None:
-            if se_aplico == 'no':
+            if infForm['si_o_no'] == 'no':
                 if usuario_edad < 60:
                     #Menor de 60
                     #El turno lo asigna el administrador, se manda un "pedido"
                     #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna de la fiebre amarilla(El listado no es para esta demo)
 
+            
                     messages.add_message(request, messages.INFO, ' Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno!')
                     return redirect('inicio')
                 else: 
                     #Mayor de 60
                     #No se puede vacunar 
+
                     messages.add_message(request, messages.INFO, ' Usted es mayor de 60. No se puede vacunar contra la Fiebre Amarilla!')
                     return redirect('inicio')
                 
@@ -342,8 +340,6 @@ def cargar_info_gripe(request):
                     #minutos=random.randint(00,50)
                     hora_turno= datetime.time(hora,00)
 
-                    #Esto va a depender de los turnos disponibles, tendriamos que acceder a los turnos y buscar una fecha libre dependiendo de cada vacuna
-
                     turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
                     turno.save()
 
@@ -351,7 +347,6 @@ def cargar_info_gripe(request):
                     return redirect('inicio')
 
                     #Asignar el turno al usuario
-                    #Mensaje: Su turno ha sido reservado
 
                 else: 
                     #Mayor de 60
