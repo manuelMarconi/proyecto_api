@@ -13,7 +13,7 @@
         <form action="/covid" method="POST"> {% csrf_token %}
             <p> Cantidad de dosis aplicadas: 
                 <select name="cantidad_dosis">
-                    <option value="0" selected>0 dosis</option>
+                    <option value="0">0 dosis</option>
                     <option value="1">1 dosis</option>
                     <option value="2">2 dosis</option>
                   </select>
@@ -22,7 +22,7 @@
             <p> ¿Posee alguna enfermedad de riesgo?
                 <select name="si_o_no">
                     <option value="si">Si</option>
-                    <option value="no" selected>No</option>
+                    <option value="no">No</option>
                   </select>
             </p>
 

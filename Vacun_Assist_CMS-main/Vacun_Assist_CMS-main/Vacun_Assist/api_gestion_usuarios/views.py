@@ -136,12 +136,11 @@ def calcularEdad(fecha):
 def tieneTurno(request, vacuna_pedido):
     #Busco al dni del usuario de la sesion
     us=list(Usuario.objects.filter(id=request.user.id))
-    dni=us[int(0)].dni
 
 
     #Busco en la lista turnos, los turnos que corresponden al usuario
     #Puede tener hasta tres turnos, o no tener ninguno
-    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+
 
     tieneTurno=False
     #Si esta vacia la lista entonces no tiene ningun tierno
@@ -149,6 +148,8 @@ def tieneTurno(request, vacuna_pedido):
         tieneTurno=False
     else:
         #Si tiene turnos, recorro la lista y busco el turno de "vacuna_pedido", puede ser coronavirus, gripe o fiebre amarilla
+        dni=us[int(0)].dni
+        turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
         for turno in turnos:
             if turno.vacuna == vacuna_pedido:
                 return True
@@ -175,10 +176,11 @@ def cargar_info_covid(request):
 
             us=list(Usuario.objects.filter(id=request.user.id))
 
-
+             
             fecha_nac=us[int(0)].fecha_nacimiento
             dni=us[int(0)].dni
             direc=us[int(0)].direccion
+
             usuario_edad=calcularEdad(fecha_nac)
 
             cantidad_dosis= int(infForm['cantidad_dosis'])
@@ -414,12 +416,18 @@ def estatus_turno(request):
 
     #Esto devuelve DNI del usuario
     us=list(Usuario.objects.filter(id=request.user.id))
-    dni=us[int(0)].dni
+
+    if len(us) == 0:
+        messages.add_message(request, messages.INFO, 'Usted no tiene turnos pendientes') 
+        return redirect('inicio')
+    else:
+        dni=us[int(0)].dni
+        usuario=us[int(0)]
 
 
-    #Busco en la lista turnos, los turnos que corresponden al usuario
-    #Puede tener hasta tres turnos, o no tener ninguno
-    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+        #Busco en la lista turnos, los turnos que corresponden al usuario
+        #Puede tener hasta tres turnos, o no tener ninguno
+        turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
 
 
-    return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": us[int(0)]})
+    return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": usuario})
