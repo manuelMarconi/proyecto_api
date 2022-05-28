@@ -415,12 +415,18 @@ def estatus_turno(request):
 
     #Esto devuelve DNI del usuario
     us=list(Usuario.objects.filter(id=request.user.id))
-    dni=us[int(0)].dni
+
+    if len(us) == 0:
+        messages.add_message(request, messages.INFO, 'Usted no tiene turnos pendientes') 
+        return redirect('inicio')
+    else:
+        dni=us[int(0)].dni
+        usuario=us[int(0)]
 
 
-    #Busco en la lista turnos, los turnos que corresponden al usuario
-    #Puede tener hasta tres turnos, o no tener ninguno
-    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+        #Busco en la lista turnos, los turnos que corresponden al usuario
+        #Puede tener hasta tres turnos, o no tener ninguno
+        turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
 
 
-    return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": us[int(0)]})
+    return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": usuario})
