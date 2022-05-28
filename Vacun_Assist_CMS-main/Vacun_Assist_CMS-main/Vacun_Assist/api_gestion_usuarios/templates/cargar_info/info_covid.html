@@ -9,17 +9,24 @@
       
         <p> Subir historial de vacunacion: Vacuna del coronavirus. </p>
 
-        <p> Si se aplico alguna dosis: </p>
 
         <form action="/covid" method="POST"> {% csrf_token %}
-            <p> 
-                Cantidad de dosis: <input type="text" name="cantidad_dosis">
+            <p> Cantidad de dosis aplicadas: 
+                <select name="cantidad_dosis">
+                    <option value="0" selected>0 dosis</option>
+                    <option value="1">1 dosis</option>
+                    <option value="2">2 dosis</option>
+                  </select>
+                </p> 
+
+            <p> ¿Posee alguna enfermedad de riesgo?
+                <select name="si_o_no">
+                    <option value="si">Si</option>
+                    <option value="no" selected>No</option>
+                  </select>
             </p>
 
-            <p> 
-                Ponga "si" si posee alguna enfermedad, "no" en caso contrario: <input type="text" name="si_o_no">
-            </p>
-    
+
             <input type="submit" value="Pedir turno">
             <p>                
                 <a href="{% url 'inicio' %}">Volver a inicio</a>
