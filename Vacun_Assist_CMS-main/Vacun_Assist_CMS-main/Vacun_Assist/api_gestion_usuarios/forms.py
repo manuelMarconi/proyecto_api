@@ -29,13 +29,14 @@ class FormularioAutenticacion(forms.Form):
 class FormularioCovid(forms.Form):
     #Cantidad de dosis aplicadas    
     cantidad_dosis=forms.IntegerField(max_value=2,min_value=0)
-    paciente_riesgo=forms.Textarea()
+    si_o_no=forms.CharField(max_length=10)
 
 class FormularioFiebreA(forms.Form):
-    #En que año se aplico
+    #En que año se aplico, no se usa
     fecha_aplicacion_fiebre_a=forms.DateField()
+    si_o_no=forms.CharField(max_length=10)
 
 
 class FormularioGripe(forms.Form):
-    #Fecha de la ultima aplicacion
+    #Fecha de la ultima aplicacion, no se usa
     fecha_aplicacion_gripe=forms.DateField()

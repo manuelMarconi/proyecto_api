@@ -8,11 +8,13 @@
       
         <p> Subir historial de vacunacion: Vacuna de la fiebre amarilla. </p>
 
-        <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
-
         <form action="/fiebre_a" method="POST"> {% csrf_token %}
-            <p> 
-                Ponga "si" si posee la vacuna, "no" en caso contrario: <input type="text" name="si_o_no">
+ 
+            <p> ¿Usted se vacuno contra la fiebre amarilla?
+                <select name="si_o_no">
+                    <option value="si">Si</option>
+                    <option value="no" selected>No</option>
+                  </select>
             </p>
     
             <input type="submit" value="Pedir turno">

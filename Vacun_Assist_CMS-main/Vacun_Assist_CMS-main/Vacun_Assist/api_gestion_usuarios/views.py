@@ -134,14 +134,43 @@ def calcularEdad(fecha):
   
     return edad 
 
+def tieneTurno(request, vacuna_pedido):
+    #Busco al dni del usuario de la sesion
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+
+    #Busco en la lista turnos, los turnos que corresponden al usuario
+    #Puede tener hasta tres turnos, o no tener ninguno
+    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+
+    tieneTurno=False
+    #Si esta vacia la lista entonces no tiene ningun tierno
+    if len(us) == 0:
+        tieneTurno=False
+    else:
+        #Si tiene turnos, recorro la lista y busco el turno de "vacuna_pedido", puede ser coronavirus, gripe o fiebre amarilla
+        for turno in turnos:
+            if turno.vacuna == vacuna_pedido:
+                return True
+
+    return tieneTurno
+
+
 
 
 def cargar_info_covid(request):
 
     if request.method=="POST":
-        miFormulario=FormularioRegistro(request.POST)
+        miFormulario=FormularioCovid(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
+
+            #Chequeo que no tenga un turno previo
+            tur=tieneTurno(request, 'Coronavirus')
+            if tur == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de coronavirus') 
+                return redirect('inicio')
              
             #Busco la edad del usuario
 
@@ -153,57 +182,52 @@ def cargar_info_covid(request):
             direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
 
+            cantidad_dosis= int(infForm['cantidad_dosis'])
+            paciente_riesgo= infForm['si_o_no']
 
-            #request.user es la sesion del usuario
-            #supuestamente sirve: 
-            #request.user[]
-            #request.sessions.user[]
-            #request.sessions[]
 
-            if infForm['cantidad_dosis'] == 2:
+            if cantidad_dosis == 2:
                 messages.add_message(request, messages.ERROR, 'ERROR No puede recibir las vacunas porque tiene todas las dosis correspondientes') 
-                return render(request,"cargar_info/info_covid.html")
+                #return render(request,"cargar_info/info_covid.html")
+                return redirect('inicio')
                 #Mensaje: No puede recibir las vacunas porque tiene todas las dosis correspondientes
             
             if usuario_edad < 18:
                 messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
-                return render(request,"inicio")
+                return redirect('inicio')
             else:
                 if usuario_edad < 60:
 
-                    if infForm['si_o_no'] == 'si':
+                    if paciente_riesgo == 'si':
                         #Menor de 60, con riesgo
-                        #Chequeo que no tenga turno de covid previo (accede a lista turno de Usuario)
                         #Asigno el turno
                         
                         dia_actual=datetime.datetime.now()
                         fecha_turno = datetime.date(dia_actual.year, dia_actual.month, (dia_actual.day + 1))
-                        hora_turno= datetime.time(12,15)
+
+                        hora=random.randint(8,16)
+                        #minutos=random.randint(00,50)
+                        hora_turno= datetime.time(hora,30)
+
 
 
                         turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
                         turno.save()
 
                         messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
-                        return render(request,"inicio")
-                        #Agrego el turno al usuario
-                        #Mensaje: Su turno ha sido reservado
+                        return redirect('inicio')
+
                     else:
                         #Menor de 60, sin riesgo
-                        #Chequeo que no tenga turno de covid previo
                         #El turno lo asigna manualmente el administrador
-
-                        #Mensaje: Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno
 
                         #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
                         messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
-                        return render(request,"inicio")
+                        return redirect('inicio')
                     
                 
                 else: 
                     #Mayor de 60
-                    #Chequeo que no tenga turno de covid previo
-                    #Que tenga menos de dos dosis
                     #Se asigna un turno
 
                     #fecha = datetime.date(2021, 7, 22)
@@ -212,16 +236,17 @@ def cargar_info_covid(request):
 
                     dia_actual=datetime.datetime.now()
                     fecha_turno = datetime.date(dia_actual.year, dia_actual.month, (dia_actual.day + 1))
-                    hora_turno= datetime.time(12,15)
+
+                    hora=random.randint(8,13)
+                    #minutos=random.randint(00,50)
+                    hora_turno= datetime.time(hora,20)
 
 
                     turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
                     turno.save()
                 
-                    #Asignar el turno al usuario
-                    #Mensaje: Su turno ha sido reservado
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
-                    return render(request,"inicio")
+                    return redirect('inicio')
             
       #  return render(request, "cargar_info/info_covid.html")
     else:
@@ -236,6 +261,11 @@ def cargar_info_fiebre_a(request):
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
 
+            #Chequeo que no tenga un turno previo
+            tur=tieneTurno(request, 'Fiebre amarilla')
+            if tur == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de fiebre amarilla') 
+                return redirect('inicio')
             #Busco la edad del usuario
 
             us=list(Usuario.objects.filter(id=request.user.id))
@@ -246,24 +276,26 @@ def cargar_info_fiebre_a(request):
             direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
 
+            se_aplico=infForm['si_o_no']
+
       #      if infForm['fecha_aplicacion_fiebre_a'] is not None:
-            if infForm['si_o_no'] == 'si':
+            if se_aplico == 'no':
                 if usuario_edad < 60:
                     #Menor de 60
                     #El turno lo asigna el administrador, se manda un "pedido"
                     #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna de la fiebre amarilla(El listado no es para esta demo)
 
-                    #Mensaje: Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno
                     messages.add_message(request, messages.INFO, ' Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno!')
-                    return render(request, "inicio")
+                    return redirect('inicio')
                 else: 
                     #Mayor de 60
                     #No se puede vacunar 
                     messages.add_message(request, messages.INFO, ' Usted es mayor de 60. No se puede vacunar contra la Fiebre Amarilla!')
-                    return render(request, "inicio")
+                    return redirect('inicio')
                 
             else:
-                return render(request, "inicio")
+                messages.add_message(request, messages.INFO, ' Usted ya se aplico la dosis correspondiente de la vacuna de la Fiebre Amarilla')
+                return redirect('inicio')
 
 
     else:
@@ -278,21 +310,21 @@ def cargar_info_gripe(request):
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
 
+            #Chequeo que no tenga un turno previo
+            tur=tieneTurno(request, 'Gripe')
+            if tur == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de la gripe') 
+                return redirect('inicio')
+
             #Busco la edad del usuario
-            #usuario_fecha=request.user['fecha_nacimiento'] #dudoso
-            #usuario_edad= calcularEdad(usuario_fecha)
-            #usuario=Usuario.objects.filter(id=request.user.id)
+
             
             us=list(Usuario.objects.filter(id=request.user.id))
-
 
             fecha_nac=us[int(0)].fecha_nacimiento
             dni=us[int(0)].dni
             direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
-            #dia_actual=datetime.datetime.now()
-            #fecha_prueba = datetime.date(dia_actual.year, (dia_actual.month+6), (dia_actual.day + 1))
-            #usuario_edad= calcularEdad(fecha_prueba)
 
             # falta validar cuando paso menos de 12 meses y pide de nuevo la vacuna
             if infForm['fecha_aplicacion_gripe'] is not None: # que se verifica aca??
@@ -300,21 +332,20 @@ def cargar_info_gripe(request):
                     #Menor de 60
                     #Asigno turno a 6 meses
 
-                    #fecha = datetime.date(2021, 7, 22)
-                    #hora = datetime.time(21, 15)
-                    #hora.isoformat() : '21:15:00'
-
                     dia_actual=datetime.datetime.now()
                     fecha_turno = datetime.date(dia_actual.year, (dia_actual.month+6), (dia_actual.day + 1))
-                    hora_turno= datetime.time(12,15)
+                    
+                    hora=random.randint(9,16)
+                    #minutos=random.randint(00,50)
+                    hora_turno= datetime.time(hora,00)
 
                     #Esto va a depender de los turnos disponibles, tendriamos que acceder a los turnos y buscar una fecha libre dependiendo de cada vacuna
 
                     turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
-                    #turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar='41670882', vacunatorio='Zona municipalidad')
                     turno.save()
 
-
+                    messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                    return redirect('inicio')
 
                     #Asignar el turno al usuario
                     #Mensaje: Su turno ha sido reservado
@@ -323,19 +354,20 @@ def cargar_info_gripe(request):
                     #Mayor de 60
                     #Asigno turno a 3 meses
 
-                    #fecha = datetime.date(2021, 7, 22)
-                    #hora = datetime.time(21, 15)
-                    #hora.isoformat() : '21:15:00'
-
                     dia_actual=datetime.datetime.now()
                     fecha_turno = datetime.date(dia_actual.year, (dia_actual.month+3), (dia_actual.day + 1))
-                    hora_turno= datetime.time(12,15)
+                    
+                    hora=random.randint(8,15)
+                    #minutos=random.randint(00,50)
+                    hora_turno= datetime.time(hora,15)
 
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=request.user['dni'], vacunatorio=request.user['direccion'])
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
                     turno.save()
 
                     #Asignar el turno al usuario
-                    #Mensaje: Su turno ha sido reservado
+
+                    messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                    return redirect('inicio')
             else:
                 messages.add_message(request, messages.INFO, 'Cargue el formulario') 
                 return render(request,"cargar_info/info_gripe.html")  
@@ -343,9 +375,6 @@ def cargar_info_gripe(request):
         else:
             messages.add_message(request, messages.INFO, 'Formulario Invalido') 
             return render(request,"cargar_info/info_gripe.html")     
-        
-            
-            return redirect('inicio')
     else:
         miFormulario=FormularioGripe()
     return render(request, "cargar_info/info_gripe.html", {"form": miFormulario})
