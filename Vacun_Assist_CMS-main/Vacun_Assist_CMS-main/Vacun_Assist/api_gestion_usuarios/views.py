@@ -38,11 +38,13 @@ def registro(request):
                 messages.add_message(request, messages.INFO, 'ERROR el email ya se encuentra registrado!')
                 return render(request, "autenticacion/registro.html")
             #Validar que las contraseñas son iguales 
+            
+            
             if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']<8: #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html")
-
-    
+            
+            
             if (len(infForm['dni'])==8): #verifico que el dni tenga 8 digitos, simulacion de renaper
                 
                 
@@ -59,8 +61,6 @@ def registro(request):
                 messages.add_message(request, messages.INFO, 'Registro Exitoso')
                 login(request, user)
                 return redirect('inicio')
-                
-
             else:
                 messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
                 return render(request, "autenticacion/registro.html")
