@@ -388,9 +388,9 @@ def modificar_perfil(request):
     miFormulario=FormularioModificar(datos,auto_id=False)
     #en la variable miformulario, originalmente se encontrarian los datos del usuario, para cuando se haga el get se presenten. En caso de ser post el request, se cambia el miFormulario dentro del if
     if request.method=="POST":
-        miFormulario=FormularioModificar(request.POST)
-        if miFormulario.is_valid():
-            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+        miFormularioNuevo=FormularioModificar(request.POST)
+        if miFormularioNuevo.is_valid():
+            infForm=miFormularioNuevo.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
             #Validar igualdad de contraseñas
             if (infForm['contraseña1']==infForm['contraseña2']):
                 
@@ -409,15 +409,18 @@ def modificar_perfil(request):
                 usuarioModificar.nombre=infForm['nombre']
                 usuarioModificar.apellido=infForm['apellido']
                 usuarioModificar.save()
+                messages.add_message(request, messages.SUCCESS, 'Usuario modificado correctamente')
                 return redirect('inicio')
             else:
-                messages.add_message(request, messages.ERROR, 'ERROR: Las contraseñas no cohinciden')
+                #si las contraseñas no cohinciden salta mensaje de error
+                print('las contraseñas no cohinciden') #esto puede mejorar esteticamente
                 return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
         else:
-              #Si entra, seria el formulario vacio, para que llene los datos
-            miFormulario=FormularioModificar(datos)
+            #aca entra si el usuario deja celdas en blanco o inserta valores no validos
+            print('valores de casilla no validos')#esto puede mejorar esteticamente
+            
+            return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
     
-            return JsonResponse({"Error": "Formulario no valido, complete correctamente las casillas"})
     return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
     
 def estatus_turno(request):
