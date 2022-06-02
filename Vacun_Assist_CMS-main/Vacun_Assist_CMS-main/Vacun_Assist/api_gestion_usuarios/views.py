@@ -387,14 +387,23 @@ def modificar_perfil(request):
     datos={"nombre":usuarioModificar.nombre, "apellido":usuarioModificar.apellido, "dni":usuarioModificar.dni, "fecha_nacimiento":usuarioModificar.fecha_nacimiento, "direccion":usuarioModificar.direccion, "email":usuarioModificar.email, "contraseña1":usuarioModificar.contraseña,"contraseña2":usuarioModificar.contraseña}
     
     #en la variable miformulario, originalmente se encontrarian los datos del usuario, para cuando se haga el get se presenten. En caso de ser post el request, se cambia el miFormulario dentro del if
-    miFormulario=FormularioRegistro(datos)
-    
     if request.method=="POST":
         miFormulario=FormularioRegistro(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
             #Validar igualdad de contraseñas
             if (infForm['contraseña1']==infForm['contraseña2']):
+                
+                #modificamos al User para no tener problemas en el inicio de sesion 
+                
+                user=User.objects.filter(username=usuarioModificar.email)
+                user=user[0]
+                user.set_password(infForm['contraseña1'])
+                user.save()
+                login(request,user)
+                
+                #modificamos al Usuario
+                
                 usuarioModificar.contraseña=infForm['contraseña1']
                 usuarioModificar.direccion=infForm['direccion']
                 usuarioModificar.nombre=infForm['nombre']
@@ -403,12 +412,12 @@ def modificar_perfil(request):
                 return redirect('inicio')
             else:
                 messages.add_message(request, messages.ERROR, 'ERROR: Las contraseñas no cohinciden')
-                return render(request, "gestion_usuarios/modificar_perfil.html")
+                return render(request, "gestion_usuarios/modificar_perfil.html",{"form":FormularioRegistro(datos)})
         else:
               #Si entra, seria el formulario vacio, para que llene los datos
-            miFormulario=FormularioAutenticacion()
-            return JsonResponse({"Error": "no paso formulario"})
-    return render(request, "gestion_usuarios/modificar_perfil.html",{"form":miFormulario}) #revisar aca por que miFormulario no se presenta con los datos
+            miFormulario=FormularioRegistro(datos)
+            return JsonResponse({"Error": "Formulario no valido, complete correctamente las casillas"})
+    return render(request, "gestion_usuarios/modificar_perfil.html",{"form":FormularioRegistro(datos)}) #revisar aca por que miFormulario no se presenta con los datos
     
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
