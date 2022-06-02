@@ -44,7 +44,7 @@ def registro(request):
             
             if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']<8: #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
-                return render(request, "autenticacion/registro.html")
+                return render(request, "autenticacion/registro.html",{"form":miFormulario})
             
             
             if (len(infForm['dni'])==8): #verifico que el dni tenga 8 digitos, simulacion de renaper
@@ -65,10 +65,10 @@ def registro(request):
                 return redirect('inicio')
             else:
                 messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
-                return render(request, "autenticacion/registro.html")
+                return render(request, "autenticacion/registro.html",{"form":miFormulario})
         else:
             messages.add_message(request, messages.INFO, 'ERROR formulario invalido!')
-            return render(request, "autenticacion/registro.html")    
+            return render(request, "autenticacion/registro.html",{"form":miFormulario})    
           #  return redirect('inicio')
     else:
         miFormulario=FormularioRegistro()
@@ -157,8 +157,6 @@ def tieneTurno(request, vacuna_pedido):
                 return True
 
     return tieneTurno
-
-
 
 
 def cargar_info_covid(request):
@@ -380,34 +378,38 @@ def cargar_info_gripe(request):
 
 
 def modificar_perfil(request):
+    #aca extraemos el objeto Usuario que pertenezca al User con sesion iniciada
+    
+    usuarioModificar=list(Usuario.objects.filter(email=request.user.get_username()))
+    usuarioModificar=usuarioModificar[0]
+    
+    #guardo los datos del usuario de forma 'key':valor, para luego ponerlos de valor predeterminado en el formulario(pendiente esto ultimo por no poder actualizar el form con estos valores)
+    datos={"nombre":usuarioModificar.nombre, "apellido":usuarioModificar.apellido, "dni":usuarioModificar.dni, "fecha_nacimiento":usuarioModificar.fecha_nacimiento, "direccion":usuarioModificar.direccion, "email":usuarioModificar.email, "contraseña1":usuarioModificar.contraseña,"contraseña2":usuarioModificar.contraseña}
+    
+    #en la variable miformulario, originalmente se encontrarian los datos del usuario, para cuando se haga el get se presenten. En caso de ser post el request, se cambia el miFormulario dentro del if
+    miFormulario=FormularioRegistro(datos)
+    
     if request.method=="POST":
         miFormulario=FormularioRegistro(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
-
-            #Validar que este el mail en la base de datos
-            #Validar contraseña
-            #Validar codigo
-
-            us=list(Usuario.objects.filter(email=infForm['email']))
-            if len(us)>0:  # NO ENTRA ACA
-                usuario=us[0]
-                usuario.email=infForm['email']
-                usuario.contraseña=infForm['contraseña1']
-                usuario.direccion=infForm['direccion']
-                usuario.nombre=infForm['nombre']
-                usuario.apellido=infForm['apellido']
-                usuario.save()
+            #Validar igualdad de contraseñas
+            if (infForm['contraseña1']==infForm['contraseña2']):
+                usuarioModificar.contraseña=infForm['contraseña1']
+                usuarioModificar.direccion=infForm['direccion']
+                usuarioModificar.nombre=infForm['nombre']
+                usuarioModificar.apellido=infForm['apellido']
+                usuarioModificar.save()
                 return redirect('inicio')
             else:
-                messages.add_message(request, messages.ERROR, 'ERROR gmail incorrecto')
+                messages.add_message(request, messages.ERROR, 'ERROR: Las contraseñas no cohinciden')
                 return render(request, "gestion_usuarios/modificar_perfil.html")
         else:
               #Si entra, seria el formulario vacio, para que llene los datos
             miFormulario=FormularioAutenticacion()
             return JsonResponse({"Error": "no paso formulario"})
-    return render(request, "gestion_usuarios/modificar_perfil.html")
-
+    return render(request, "gestion_usuarios/modificar_perfil.html",{"form":miFormulario}) #revisar aca por que miFormulario no se presenta con los datos
+    
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
 
