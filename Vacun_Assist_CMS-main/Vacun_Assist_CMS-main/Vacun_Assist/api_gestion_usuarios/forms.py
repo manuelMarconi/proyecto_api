@@ -19,6 +19,14 @@ class FormularioRegistro(forms.Form):
     contraseña1=forms.CharField(max_length=30)
     contraseña2=forms.CharField(max_length=30)
 
+class FormularioModificar(forms.Form):
+
+    nombre=forms.CharField(max_length=30)
+    apellido=forms.CharField(max_length=30)
+    direccion=forms.ChoiceField(choices = centros_vacunacion, widget=forms.widgets.Select())
+    contraseña1=forms.CharField(max_length=30)
+    contraseña2=forms.CharField(max_length=30)
+
 class FormularioAutenticacion(forms.Form):
     email=forms.EmailField()
     contraseña=forms.CharField(max_length=30)

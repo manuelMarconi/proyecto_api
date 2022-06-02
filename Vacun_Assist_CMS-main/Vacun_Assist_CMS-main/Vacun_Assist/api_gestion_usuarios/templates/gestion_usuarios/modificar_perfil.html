@@ -14,40 +14,22 @@
             
 
             <p>
-                Nombre: <input type="text" name="nombre"> 
+                Nombre: <input type="text" name="nombre" value={{form.nombre.value}}> 
             </p>
 
             <p>
-                Apellido: <input type="text" name="apellido"> 
-            </p>
-
-            <p>
-                DNI: <input type="text" name="dni"> 
-            </p>
-
-            <p>
-                Fecha de nacimiento: <input type="date" name="fecha_nacimiento"> 
+                Apellido: <input type="text" name="apellido" value={{form.apellido.value}}> 
             </p>
 
             <p> Vacunatorio:
-            <select name="direccion">
-                <option value="Zona municipalidad">51 e/ 10  y 11 nro 770</option>
-                <option value="Zona cementerio" selected>138 e/ 73 y 74 nro 2035</option>
-                <option value="Zona terminal de omnibus">3 e/ 41 y 42 nro 480</option>
-              </select>
-            </p>
-    
+                {{form.direccion}}
+            </p>        
             <p>
-                Email: <input type="text" name="email"> 
-            </p>
-    
-        
-            <p>
-                Contraseña: <input type="password" name="contraseña1"> 
+                Contraseña: <input type="password" name="contraseña1" value={{form.contraseña1.value}}> 
             </p>
 
             <p>
-                Por favor, repita la contraseña: <input type="password" name="contraseña2"> 
+                Por favor, repita la contraseña: <input type="password" name="contraseña2" value={{form.contraseña1.value}}> 
             </p>
     
             <input type="submit" value="Modificar">

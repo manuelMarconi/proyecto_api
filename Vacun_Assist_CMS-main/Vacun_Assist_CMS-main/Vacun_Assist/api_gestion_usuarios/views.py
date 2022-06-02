@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe
 from api_gestion_usuarios.models import Codigos, Usuario, Turno
 import random
 from django.core.mail import send_mail
@@ -384,11 +384,11 @@ def modificar_perfil(request):
     usuarioModificar=usuarioModificar[0]
     
     #guardo los datos del usuario de forma 'key':valor, para luego ponerlos de valor predeterminado en el formulario(pendiente esto ultimo por no poder actualizar el form con estos valores)
-    datos={"nombre":usuarioModificar.nombre, "apellido":usuarioModificar.apellido, "dni":usuarioModificar.dni, "fecha_nacimiento":usuarioModificar.fecha_nacimiento, "direccion":usuarioModificar.direccion, "email":usuarioModificar.email, "contraseña1":usuarioModificar.contraseña,"contraseña2":usuarioModificar.contraseña}
-    
+    datos={"nombre":usuarioModificar.nombre, "apellido":usuarioModificar.apellido,"direccion":usuarioModificar.direccion, "contraseña1":usuarioModificar.contraseña,"contraseña2":usuarioModificar.contraseña}
+    miFormulario=FormularioModificar(datos,auto_id=False)
     #en la variable miformulario, originalmente se encontrarian los datos del usuario, para cuando se haga el get se presenten. En caso de ser post el request, se cambia el miFormulario dentro del if
     if request.method=="POST":
-        miFormulario=FormularioRegistro(request.POST)
+        miFormulario=FormularioModificar(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
             #Validar igualdad de contraseñas
@@ -412,12 +412,13 @@ def modificar_perfil(request):
                 return redirect('inicio')
             else:
                 messages.add_message(request, messages.ERROR, 'ERROR: Las contraseñas no cohinciden')
-                return render(request, "gestion_usuarios/modificar_perfil.html",{"form":FormularioRegistro(datos)})
+                return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
         else:
               #Si entra, seria el formulario vacio, para que llene los datos
-            miFormulario=FormularioRegistro(datos)
+            miFormulario=FormularioModificar(datos)
+    
             return JsonResponse({"Error": "Formulario no valido, complete correctamente las casillas"})
-    return render(request, "gestion_usuarios/modificar_perfil.html",{"form":FormularioRegistro(datos)}) #revisar aca por que miFormulario no se presenta con los datos
+    return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
     
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
