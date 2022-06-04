@@ -33,17 +33,28 @@ class FormularioAutenticacion(forms.Form):
     codigo=forms.CharField(max_length=4)
 
 
+class FormularioAutenticacionVacunador(forms.Form):
+    email=forms.EmailField()
+    contraseña=forms.CharField(max_length=30)
+
+
 class FormularioCovid(forms.Form):
     #Cantidad de dosis aplicadas    
     cantidad_dosis=forms.IntegerField(max_value=2,min_value=0)
     si_o_no=forms.CharField(max_length=10)
 
 class FormularioFiebreA(forms.Form):
-    #En que año se aplico, no se usa
-    #fecha_aplicacion_fiebre_a=forms.DateField()
+    #En que año se aplico
+    fecha_aplicacion_fiebre_a=forms.DateField()
     si_o_no=forms.CharField(max_length=10)
 
 
 class FormularioGripe(forms.Form):
-    #Fecha de la ultima aplicacion, no se usa
+    #Fecha de la ultima aplicacion
     fecha_aplicacion_gripe=forms.DateField()
+    si_o_no=forms.CharField(max_length=10)
+
+class FormularioEstadoTurno(forms.Form):
+    estado=forms.CharField(max_length=30)
+
+

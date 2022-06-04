@@ -23,18 +23,27 @@
  
 
             <p>                
+                <a href="{% url 'mi_perfil' %}"> Mi perfil </a>
+            </p>
+            <p>                
                 <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
             </p>
             <p>                
                 <a href="{% url 'estatus_turno' %}"> Estatus de mis turnos</a>
             </p> 
+            <p>                
+                <a href="{% url 'historial' %}"> Ver historial de vacunación </a>
+            </p>
 
             <p> Sacar turno:</p>
             <p>  
                <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
             </p>
             <p>
-                <a href="{% url 'fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
+                <a href="{% url 'fiebre_a' %}"> Cargar información sobre historial de vacunación de fiebre amarilla</a>
+            </p>
+            <p>
+                <a href="{% url 'turno_fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
             </p>   
             <p>                
                 <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>

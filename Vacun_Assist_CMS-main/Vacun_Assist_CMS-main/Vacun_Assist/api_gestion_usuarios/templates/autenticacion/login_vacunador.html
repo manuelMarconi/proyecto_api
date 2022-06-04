@@ -1,8 +1,6 @@
 {% extends "gestion_usuarios/base.html" %}
 
-
 {% block content %}
-
 <html>
     <body>
         {% if messages %}
@@ -12,7 +10,7 @@
         {% endfor %}
     </ul>
         {% endif %}
-        <form action="/iniciar_sesion" method="POST"> {% csrf_token %}
+        <form action="/inicio_vacunador" method="POST"> {% csrf_token %}
             <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 459px;text-align: right">
           
             <p>
@@ -22,23 +20,12 @@
             <p>
                 Contraseña: <input type="password" name="contraseña"> 
             </p>
-
-            <p>
-                Codigo: <input type="text" name="codigo"> 
-            </p>
-    
+  
             <input type="submit" value="Iniciar sesion">
             <p>                
                 <a href="{% url 'inicio' %}">Volver a inicio</a>
             </p> 
-            <p>                
-                <a href="{% url 'inicio_vacunador' %}">Iniciar sesión como personal</a>
-            </p> 
         </form>
     </body>
 </html>
-
-
-
 {% endblock %}
-

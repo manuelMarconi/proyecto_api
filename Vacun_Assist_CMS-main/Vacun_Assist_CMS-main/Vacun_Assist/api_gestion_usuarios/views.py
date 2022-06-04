@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe
-from api_gestion_usuarios.models import Codigos, Usuario, Turno
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno
+from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -45,7 +45,7 @@ def registro(request):
             if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']<8: #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html",{"form":miFormulario})
-            
+
             
             if (len(infForm['dni'])==8): #verifico que el dni tenga 8 digitos, simulacion de renaper
                 
@@ -110,7 +110,7 @@ def iniciar_sesion(request):
                     messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
                     return render(request, "autenticacion/login.html")          
             else:
-                messages.add_message(request, messages.ERROR, 'ERROR usuario y/o contrasenia y/o codigo incorrecto')
+                messages.add_message(request, messages.ERROR, 'ERROR usuario y/o contraseña y/o codigo incorrecto')
                 return render(request, "autenticacion/login.html")
     else:
         #Si entra al else, seria el formulario vacio, para que llene los datos
@@ -139,16 +139,13 @@ def tieneTurno(request, vacuna_pedido):
     #Busco al dni del usuario de la sesion
     us=list(Usuario.objects.filter(id=request.user.id))
 
-
-    #Busco en la lista turnos, los turnos que corresponden al usuario
-    #Puede tener hasta tres turnos, o no tener ninguno
-
-
     tieneTurno=False
-    #Si esta vacia la lista entonces no tiene ningun tierno
+    #Comprobación innecesaria?? El usuario existe porque esta logueado
     if len(us) == 0:
         tieneTurno=False
     else:
+        #Busco en la lista turnos, los turnos que corresponden al usuario
+        #Puede tener hasta tres turnos, o no tener ninguno
         #Si tiene turnos, recorro la lista y busco el turno de "vacuna_pedido", puede ser coronavirus, gripe o fiebre amarilla
         dni=us[int(0)].dni
         turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
@@ -158,6 +155,47 @@ def tieneTurno(request, vacuna_pedido):
 
     return tieneTurno
 
+def tiene_historial_covid(request):
+    #Busco al dni del usuario de la sesion
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+    #Busco en la lista HistorialCovid, el historial que corresponde al usuario
+    historial=list(HistorialCovid.objects.filter(usuario=dni))
+
+    tiene_historial_covid=False
+    if len(historial) != 0:
+        tiene_historial_covid=True
+
+    return tiene_historial_covid
+
+def tiene_historial_fiebre_a(request):
+    #Busco al dni del usuario de la sesion
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+    #Busco en la lista HistorialCovid, el historial que corresponde al usuario
+    historial=list(HistorialFiebreA.objects.filter(usuario=dni))
+
+    tiene_historial_fiebre_a=False
+    if len(historial) != 0:
+        tiene_historial_fiebre_a=True
+
+    return tiene_historial_fiebre_a
+
+def tiene_historial_gripe(request):
+    #Busco al dni del usuario de la sesion
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+    #Busco en la lista HistorialCovid, el historial que corresponde al usuario
+    historial=list(HistorialGripe.objects.filter(usuario=dni))
+
+    tiene_historial_gripe=False
+    if len(historial) != 0:
+        tiene_historial_gripe=True
+
+    return tiene_historial_gripe
 
 def cargar_info_covid(request):
 
@@ -165,6 +203,12 @@ def cargar_info_covid(request):
         miFormulario=FormularioCovid(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
+
+            #Chequeo que no tenga un historial cargado
+            his=tiene_historial_covid(request)
+            if his == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna del coronavirus') 
+                return redirect('inicio')
 
             #Chequeo que no tenga un turno previo
             tur=tieneTurno(request, 'Coronavirus')
@@ -176,7 +220,7 @@ def cargar_info_covid(request):
 
             us=list(Usuario.objects.filter(id=request.user.id))
 
-             
+            
             fecha_nac=us[int(0)].fecha_nacimiento
             dni=us[int(0)].dni
             direc=us[int(0)].direccion
@@ -186,12 +230,14 @@ def cargar_info_covid(request):
             cantidad_dosis= int(infForm['cantidad_dosis'])
             paciente_riesgo= infForm['si_o_no']
 
+            #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
+            historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis)
+            historial.save()
+
 
             if cantidad_dosis == 2:
                 messages.add_message(request, messages.ERROR, 'ERROR No puede recibir las vacunas porque tiene todas las dosis correspondientes') 
-                #return render(request,"cargar_info/info_covid.html")
                 return redirect('inicio')
-                #Mensaje: No puede recibir las vacunas porque tiene todas las dosis correspondientes
             
             if usuario_edad < 18:
                 messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
@@ -210,9 +256,7 @@ def cargar_info_covid(request):
                         #minutos=random.randint(00,50)
                         hora_turno= datetime.time(hora,30)
 
-
-
-                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
+                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado="Asignado")
                         turno.save()
 
                         messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
@@ -223,6 +267,8 @@ def cargar_info_covid(request):
                         #El turno lo asigna manualmente el administrador
 
                         #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
+                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado="Pendiente")
+                        turno.save()
                         messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
                         return redirect('inicio')
                     
@@ -243,7 +289,7 @@ def cargar_info_covid(request):
                     hora_turno= datetime.time(hora,20)
 
 
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc)
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado="Asignado")
                     turno.save()
                 
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
@@ -262,6 +308,12 @@ def cargar_info_fiebre_a(request):
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
 
+            #Chequeo que no tenga un historial cargado
+            his=tiene_historial_fiebre_a(request)
+            if his == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
+                return redirect('inicio')
+
             #Chequeo que no tenga un turno previo
             tur=tieneTurno(request, 'Fiebre amarilla')
             if tur == True:
@@ -273,6 +325,8 @@ def cargar_info_fiebre_a(request):
 
 
             fecha_nac=us[int(0)].fecha_nacimiento
+            dni=us[int(0)].dni
+            direc=us[int(0)].direccion
             usuario_edad=calcularEdad(fecha_nac)
 
 
@@ -282,7 +336,8 @@ def cargar_info_fiebre_a(request):
                     #El turno lo asigna el administrador, se manda un "pedido"
                     #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna de la fiebre amarilla(El listado no es para esta demo)
 
-            
+                    turno=Turno(vacuna='Fiebre amarilla', usuario_a_vacunar=dni, vacunatorio=direc, estado="Pendiente")
+                    turno.save()
                     messages.add_message(request, messages.INFO, ' Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno!')
                     return redirect('inicio')
                 else: 
@@ -293,6 +348,16 @@ def cargar_info_fiebre_a(request):
                     return redirect('inicio')
                 
             else:
+                #Si puso que "si" y no subio una fecha, pide que la ingrese
+                if infForm['fecha_aplicacion_fiebre_a'] is not None:
+                    messages.add_message(request, messages.INFO, 'Cargue el formulario') 
+                    return render(request,"cargar_info/info_fiebre_a.html") 
+
+                #Si subio una fecha, ya se guarda en el historial
+                #Solo es una aplicación de la vacuna
+                historial=HistorialFiebreA(usuario=dni, fecha_aplicacion_fiebre_a= infForm['fecha_aplicacion_fiebre_a'])
+                historial.save()
+
                 messages.add_message(request, messages.INFO, ' Usted ya se aplico la dosis correspondiente de la vacuna de la Fiebre Amarilla')
                 return redirect('inicio')
 
@@ -308,6 +373,13 @@ def cargar_info_gripe(request):
         miFormulario=FormularioGripe(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
+
+            #Chequeo que no tenga un historial cargado
+            his=tiene_historial_gripe(request)
+            if his == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la gripe') 
+                return redirect('inicio')
+
 
             #Chequeo que no tenga un turno previo
             tur=tieneTurno(request, 'Gripe')
@@ -326,7 +398,7 @@ def cargar_info_gripe(request):
             usuario_edad=calcularEdad(fecha_nac)
 
             # falta validar cuando paso menos de 12 meses y pide de nuevo la vacuna
-            if infForm['fecha_aplicacion_gripe'] is not None: # que se verifica aca??
+            if infForm['si_o_no'] == 'no': 
                 if usuario_edad < 60:
                     #Menor de 60
                     #Asigno turno a 6 meses
@@ -338,7 +410,7 @@ def cargar_info_gripe(request):
                     #minutos=random.randint(00,50)
                     hora_turno= datetime.time(hora,00)
 
-                    turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
+                    turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado="Asignado")
                     turno.save()
 
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
@@ -357,7 +429,7 @@ def cargar_info_gripe(request):
                     #minutos=random.randint(00,50)
                     hora_turno= datetime.time(hora,15)
 
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc)
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado="Asignado")
                     turno.save()
 
                     #Asignar el turno al usuario
@@ -365,8 +437,15 @@ def cargar_info_gripe(request):
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
                     return redirect('inicio')
             else:
-                messages.add_message(request, messages.INFO, 'Cargue el formulario') 
-                return render(request,"cargar_info/info_gripe.html")  
+                #Si puso que "si", pide que ingrese una fecha
+                if infForm['fecha_aplicacion_gripe'] is not None:
+                    messages.add_message(request, messages.INFO, 'Cargue el formulario') 
+                    return render(request,"cargar_info/info_gripe.html")  
+
+                #Si subio una fecha, se guarda en el historial
+                #ACA es donde tendriamos que agregar una validación de la fecha que se ingresa, si pasaron 12 meses se puede vacunar 
+                historial=HistorialGripe(usuario=dni, fecha_aplicacion_gripe= infForm['fecha_aplicacion_gripe'])
+                historial.save()
         
         else:
             messages.add_message(request, messages.INFO, 'Formulario Invalido') 
@@ -426,10 +505,10 @@ def modificar_perfil(request):
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
 
-    #Esto devuelve DNI del usuario
+    #Esto devuelve ID del usuario
     us=list(Usuario.objects.filter(id=request.user.id))
 
-    if len(us) == 0:
+    if len(us) == 0: #Esta comprobacion no sirve para nada, creo
         messages.add_message(request, messages.INFO, 'Usted no tiene turnos pendientes') 
         return redirect('inicio')
     else:
@@ -439,7 +518,125 @@ def estatus_turno(request):
 
         #Busco en la lista turnos, los turnos que corresponden al usuario
         #Puede tener hasta tres turnos, o no tener ninguno
+        #Agregar comprobacion de estado, los que estan "Completo" o "Incompleto" no deberian aparecer aca. Se podria comprobar directamente en el html, creo
         turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
 
 
     return render(request, "gestion_usuarios/estatus_turno.html", {"turnos": turnos, "usuario": usuario})
+
+
+def mi_perfil(request):
+    #Esto muestra los datos del perfil del usuario:
+    #Nombre, apellido, dni, email, fecha de nacimiento, vacunatorio
+
+    #Esto devuelve ID del usuario
+    us=list(Usuario.objects.filter(id=request.user.id))
+
+    #Guardo el usuario en la variable
+    usuario=us[int(0)]
+
+    return render(request, "gestion_usuarios/mi_perfil.html", {"usuario": usuario})
+
+
+def ver_historial(request):
+    #Mostrar todos los historiales de vacunacion
+
+    #Busco el dni
+    us=list(Usuario.objects.filter(id=request.user.id))
+    dni=us[int(0)].dni
+
+    #Busco los 3 historiales
+    his_covid=list(HistorialCovid.objects.filter(usuario=dni))
+    his_fiebre_a=list(HistorialFiebreA.objects.filter(usuario=dni))
+    his_gripe=list(HistorialGripe.objects.filter(usuario=dni))
+
+    return render(request, "gestion_usuarios/historial.html", {"historial_covid": his_covid, "historial_fiebre_a": his_fiebre_a, "historial_gripe": his_gripe})
+    
+
+def iniciar_sesion_vacunador(request):
+    if request.method=="POST":
+        miFormulario=FormularioAutenticacionVacunador(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+
+            #Se podrian chequear todos los campos por separado
+            us=list(Vacunador.objects.filter(email=infForm['email'], contraseña=infForm['contraseña']))
+            
+            #utilice una lista(q siempre tiene long o 0 o 1) por que de la forma anterior no entraba al if correctamente, se puede cambiar para solo extraer un objeto.
+            if len(us)>0:
+                username=infForm['email']
+                password=infForm['contraseña']
+             
+                user=authenticate(username=username, password=password)
+                if user is not None:  
+             
+                    messages.add_message(request, messages.INFO, 'Inicio de sesion Exitoso')
+                    login(request, user)
+                    return redirect('inicio')
+                else:
+                    messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
+                    return render(request, "autenticacion/login_vacunador.html")          
+            else:
+                messages.add_message(request, messages.ERROR, 'ERROR usuario y/o contraseña incorrecto')
+                return render(request, "autenticacion/login_vacunador.html")
+    else:
+        #Si entra al else, seria el formulario vacio, para que llene los datos
+        miFormulario=FormularioAutenticacionVacunador()
+
+    
+    return render(request, "autenticacion/login_vacunador.html", {"form": miFormulario})
+    
+def sacar_turno_fiebre_amarilla(request):
+    return render(request, "cargar_info/fiebre_a_turno.html")
+   
+
+def observar_turnos_dia(request):
+    #Dia actual
+    dia_actual=datetime.datetime.today()
+
+    #Busco ID del vacunador logueado y asi guardo el vacunatorio
+    vac=list(Vacunador.objects.filter(id=request.user.id))
+
+    #Busco el vacunatorio del vacunador
+    #Esto da error "fuera de rango", puede ser porque no hay ningun vacunador registrado, pero no deberia dar error, uso la misma sintaxis para buscar datos del usuario
+    vacunatorio_actual=vac[int(0)].vacunatorio
+
+    #Busco los turnos del vacunatorio y de la fecha actual
+    turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual))
+
+
+    return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
+
+
+def marcar_turno(request):
+
+    if request.method=="POST":
+        miFormulario=FormularioEstadoTurno(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+
+            estado= infForm['estado']
+
+            if estado == "completo":
+                #actualizo el estado del turno a completo
+                #Como busco el turno? 
+                pass
+            else:
+                #actualizo el estado del turno a incompleto
+                pass
+
+            
+    else:
+        #Si entra al else, seria el formulario vacio, para que llene los datos
+        miFormulario=FormularioEstadoTurno()
+
+    
+    return render(request, "gestion_vacunador/marcar_turno.html", {"form": miFormulario})
+
+
+def agregar_persona(request):
+    return render(request, "gestion_vacunador/agregar_persona.html")
+
+
+
+

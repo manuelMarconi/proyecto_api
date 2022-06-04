@@ -11,8 +11,14 @@
         <p> Si se aplico la vacuna, ingrese la siguiente información: </p>
 
         <form action="/gripe" method="POST"> {% csrf_token %}
+            <p>¿Usted se vacuno contra la gripe?
+                <select name="si_o_no">
+                    <option value="si">Si</option>
+                    <option value="no">No</option>
+                  </select>
+            </p>
             <p>
-                Fecha de la aplicación de la vacuna: <input type="text" name="fecha_aplicacion_gripe"> 
+                Fecha de la aplicación de la vacuna: <input type="date" name="fecha_aplicacion_gripe"> 
             </p>
     
             <input type="submit" value="Pedir turno">

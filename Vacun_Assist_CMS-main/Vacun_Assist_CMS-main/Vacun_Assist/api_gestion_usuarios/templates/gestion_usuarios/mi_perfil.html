@@ -1,0 +1,20 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+    <p> Mi perfil </p>
+    
+    <p> Nombre: {{usuario.nombre}} </p>
+    <p> Apellido: {{usuario.apellido}} </p>
+    <p> DNI: {{usuario.dni}} </p>
+    <p> Vacunatorio: {{usuario.direccion}} </p>
+    <p> Email: {{usuario.email}} </p>
+    <p> Fecha de nacimiento: {{usuario.fecha_nacimiento}} </p>
+
+    <p>                
+        <a href="{% url 'inicio' %}">Volver a inicio</a>
+    </p> 
+</span>
+</html>
+{% endblock %}
