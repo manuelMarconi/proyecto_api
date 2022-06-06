@@ -56,5 +56,6 @@ class FormularioGripe(forms.Form):
 
 class FormularioEstadoTurno(forms.Form):
     estado=forms.CharField(max_length=30)
+    observaciones=forms.Textarea()
 
 
