@@ -1,15 +1,13 @@
 {% extends "gestion_usuarios/base.html" %}
 
 {% block content %}
-<html>
-    
-    <body >
-        
+<html>   
+    <body > 
         {% if messages %}
     <ul class="messages">
         {% for message in messages %}
         <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-            <span style="background-color: rgb(253, 246, 44)"> 
+            <span style="background-color: rgb(39, 166, 4); float: left; margin-left: 400px;text-align: right""> 
                 {{ message }}
             </span>
         </span>
