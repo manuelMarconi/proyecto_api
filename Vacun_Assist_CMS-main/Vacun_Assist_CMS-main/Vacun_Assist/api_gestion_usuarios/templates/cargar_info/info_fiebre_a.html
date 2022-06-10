@@ -9,6 +9,18 @@
         <p> Subir historial de vacunacion: Vacuna de la fiebre amarilla. </p>
 
         <form action="/fiebre_a" method="POST"> {% csrf_token %}
+            {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            <span style="background-color: rgb(251, 133, 3)"> 
+                                {{ message }}
+                                </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                    {% endif %}
  
             <p>¿Usted se vacuno contra la fiebre amarilla?
                 <select name="si_o_no">

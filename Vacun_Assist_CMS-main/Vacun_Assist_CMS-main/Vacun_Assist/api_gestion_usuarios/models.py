@@ -70,7 +70,8 @@ class HistorialCovid(models.Model):
 class HistorialFiebreA(models.Model):
     fecha_aplicacion_fiebre_a=models.DateField(blank=True, null=True)
     usuario=models.CharField(max_length=8)
-
+    si_o_no=models.CharField(max_length=2, null=True)
+    
     def __str__(self):
         return 'DNI: %s. Fecha: %s' % (self.usuario, self.fecha_aplicacion_fiebre_a)
  
