@@ -3,19 +3,23 @@
 {% block content %}
 <html>
     <body>
-    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
-    <p> Turnos del día: </p>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <p style="text-align:center">
+        <u><b> Turnos del día </b></u> 
+    </p>
 
     {% if turnos %}
-    <li>
-        <p> Vacuna a aplicar: {{turno.vacuna}} </p>
-        <p> DNI de la persona a vacunar: {{turno.usuario_a_vacunar}} </p>
-        <p> Hora: {{turno.hora}} </p> 
-        <p> Estado: {{turno.estado}} </p> 
-        <p>                
-            <a href="{% url 'marcar_turno' %}"> Cambiar estado del turno</a>
+    <ul> 
+        {% for turno in turnos %}         
+        <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+        <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+        <li> <b> Hora: </b> {{turno.hora}} </li>
+        <p style="text-align:center">                
+            <a href="{% url 'marcar_turno' %}"> Cambiar estado de turno</a>
         </p> 
-    </li>
+    </span>
+        {% endfor %}
+    </ul>
 
     {% else %} 
         No hay turnos registrados para este día
@@ -23,9 +27,11 @@
     {% endif %}  
 
 
-    <p>                
-        <a href="{% url 'inicio_vac' %}">Volver a inicio</a>
-    </p>
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_vac' %}">
+            Volver a inicio
+        </a>
+    </p> 
 
     </span>
     </body>

@@ -3,22 +3,29 @@
 {% block content %}
 <html>
 <body>
-    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
-    <p> Marcar estado de turno</p>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+        
+    <p style="text-align:center">
+        <u><b> Marcar estado de turno </b></u> 
+    </p>
+
 
     <form action="/marcar_turno" method="POST"> {% csrf_token %}
-        <p>Estado de turno actual: {{turno.estado}} </p>
-        <p> Cambiar estado: 
+        <li> <u> Estado de turno actual</u>: {{turno.estado}} </li>
+        <p> </p>
+        <li> <u> Cambiar estado</u>:
             <select name="estado">
                 <option value="completo">Completo</option>
                 <option value="incompleto">Incompleto</option>
             </select>
-        </p>
+        </li>
 
-        <p> Observaciones: 
-            <p> <textarea name="observaciones" rows="20" cols="30"></textarea> </textarea>>  </p>
+        <p> </p>
 
-        </p>
+        <li> <u> Observaciones</u>: 
+                <p> <textarea name="observaciones" rows="10" cols="40"></textarea> </textarea>>  </p>
+
+        </li>
 
         <input type="submit" value="Marcar estado de turno">
     </form>

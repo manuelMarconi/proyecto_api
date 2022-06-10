@@ -4,7 +4,7 @@
 <html>
     <body>
 
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
       
         <p> Subir historial de vacunacion: Vacuna de la fiebre amarilla. </p>
 
@@ -19,12 +19,17 @@
             <p>
                 Fecha de la aplicación de la vacuna: <input type="date" name="fecha_aplicacion_fiebre_a"> 
             </p>
-    
-            <input type="submit" value="Cargar información">
 
-            <p>                
-                <a href="{% url 'inicio' %}">Volver a inicio</a>
-            </p> 
+
+            <p style="text-align:center">       
+                <input type="submit" value="Cargar información">
+            </p>
+
+            <p style="text-align:center">       
+                <a href="{% url 'inicio' %}">
+                    Volver a inicio
+                </a>
+            </p>
         </form>
     </span>
     </body>

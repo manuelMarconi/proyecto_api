@@ -19,19 +19,21 @@
         {% endif %}
     
         {% if user.is_authenticated %}
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
-            <p>                
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+            <p> </p>
+            <li>                
                 <a href="{% url 'mi_perfil_vacunador' %}"> Mi perfil </a>
-            </p>
-            <p>                
+            </li>
+            <p> </p>
+            <li>                
                 <a href="{% url 'agregar_persona' %}"> Agregar persona al sistema  </a>
-            </p>
-
-            <p>                
+            </li>
+            <p> </p>
+            <li>                
                 <a href="{% url 'turnos_dia' %}"> Turnos del día </a>
-            </p>
+            </li>
 
-            
+            <p></p>
             <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
         </span>
    

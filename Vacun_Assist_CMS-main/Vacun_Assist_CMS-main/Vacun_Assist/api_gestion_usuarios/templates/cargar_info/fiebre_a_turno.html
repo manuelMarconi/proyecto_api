@@ -2,20 +2,31 @@
 
 {% block content %}
 <html>
-    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+        <p style="text-align:center">
+            <u><b>Turno para la vacuna de la fiebre amarilla</b></u> 
+        </p>
         <form action="/turno_fiebre_a" method="POST"> {% csrf_token %}
- 
+            
             <p>¿Usted se desea vacunar contra la fiebre amarilla?
                 <select name="si_o_no">
                     <option value="si">Si</option>
                     <option value="no">No</option>
                   </select>
-            </p>
-  
+                </p>
+
+
+        
+        
+        <p style="text-align:center">       
             <input type="submit" value="Pedir turno">
-    <p>                
-        <a href="{% url 'inicio' %}">Volver a inicio</a>
-    </p> 
+        </p>
+
+        <p style="text-align:center">       
+                <a href="{% url 'inicio' %}">
+                    Volver a inicio
+                </a>
+            </p>
     </span>
 </html>
 {% endblock %}

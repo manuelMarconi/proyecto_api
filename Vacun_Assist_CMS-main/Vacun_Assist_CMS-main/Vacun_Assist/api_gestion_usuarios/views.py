@@ -140,8 +140,9 @@ def calcularEdad(fecha):
     return edad 
 
 def tieneTurno(request, vacuna_pedido):
+
     #Busco al dni del usuario de la sesion
-    us=list(Usuario.objects.filter(id=request.user.id))
+    us=list(Usuario.objects.filter(email=request.user.email))
 
     tieneTurno=False
     #Comprobación innecesaria?? El usuario existe porque esta logueado
@@ -161,7 +162,9 @@ def tieneTurno(request, vacuna_pedido):
 
 def tiene_historial_covid(request):
     #Busco al dni del usuario de la sesion
-    us=list(Usuario.objects.filter(id=request.user.id))
+
+    us=list(Usuario.objects.filter(email=request.user.email))
+
     dni=us[int(0)].dni
 
     #Busco en la lista HistorialCovid, el historial que corresponde al usuario
@@ -175,7 +178,7 @@ def tiene_historial_covid(request):
 
 def tiene_historial_fiebre_a(request):
     #Busco al dni del usuario de la sesion
-    us=list(Usuario.objects.filter(id=request.user.id))
+    us=list(Usuario.objects.filter(email=request.user.email))
     dni=us[int(0)].dni
 
     #Busco en la lista HistorialCovid, el historial que corresponde al usuario
@@ -189,7 +192,8 @@ def tiene_historial_fiebre_a(request):
 
 def tiene_historial_gripe(request):
     #Busco al dni del usuario de la sesion
-    us=list(Usuario.objects.filter(id=request.user.id))
+    
+    us=list(Usuario.objects.filter(email=request.user.email))
     dni=us[int(0)].dni
 
     #Busco en la lista HistorialCovid, el historial que corresponde al usuario
@@ -221,8 +225,7 @@ def cargar_info_covid(request):
                 return redirect('inicio')
              
             #Busco la edad del usuario
-
-            us=list(Usuario.objects.filter(id=request.user.id))
+            us=list(Usuario.objects.filter(email=request.user.email))
 
             
             fecha_nac=us[int(0)].fecha_nacimiento
@@ -312,7 +315,9 @@ def cargar_info_fiebre_a(request):
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
 
-            us=list(Usuario.objects.filter(id=request.user.id))
+            #Busco al dni del usuario de la sesion
+    
+            us=list(Usuario.objects.filter(email=request.user.email))
             dni=us[int(0)].dni
 
 
@@ -355,7 +360,10 @@ def sacar_turno_fiebre_amarilla(request):
                 return redirect('inicio')
 
             #Busco la edad del usuario
-            us=list(Usuario.objects.filter(id=request.user.id))
+            #Busco por mail porque User y Usuario comparten ID en algunos casos pero no en todos
+            #Lo que sabemos que si o si tienen en comun es el mail, (En este sistena, en User, username tambien es el mail)
+    
+            us=list(Usuario.objects.filter(email=request.user.email))
 
 
             fecha_nac=us[int(0)].fecha_nacimiento
@@ -414,7 +422,8 @@ def cargar_info_gripe(request):
             #Busco la edad del usuario
 
             
-            us=list(Usuario.objects.filter(id=request.user.id))
+            #Busco al dni del usuario de la sesion
+            us=list(Usuario.objects.filter(email=request.user.email))
 
             fecha_nac=us[int(0)].fecha_nacimiento
             dni=us[int(0)].dni
@@ -529,8 +538,11 @@ def modificar_perfil(request):
 def estatus_turno(request):
     #En el archivo html: si tiene elementos: recorrer la lista, y mostrar datos
 
-    #Esto devuelve ID del usuario
-    us=list(Usuario.objects.filter(id=request.user.id))
+    #Busco al dni del usuario de la sesion
+    #Busco por mail porque User y Usuario comparten ID en algunos casos pero no en todos
+    #Lo que sabemos que si o si tienen en comun es el mail, (En este sistena, en User, username tambien es el mail)
+    
+    us=list(Usuario.objects.filter(email=request.user.email))
 
     if len(us) == 0: #Esta comprobacion no sirve para nada, creo
         messages.add_message(request, messages.INFO, 'Usted no tiene turnos pendientes') 
@@ -553,8 +565,11 @@ def mi_perfil(request):
     #Esto muestra los datos del perfil del usuario:
     #Nombre, apellido, dni, email, fecha de nacimiento, vacunatorio
 
-    #Esto devuelve ID del usuario
-    us=list(Usuario.objects.filter(id=request.user.id))
+    #Busco al dni del usuario de la sesion
+    #Busco por mail porque User y Usuario comparten ID en algunos casos pero no en todos
+    #Lo que sabemos que si o si tienen en comun es el mail, (En este sistena, en User, username tambien es el mail)
+    
+    us=list(Usuario.objects.filter(email=request.user.email))
 
     #Guardo el usuario en la variable
     usuario=us[int(0)]
@@ -566,7 +581,12 @@ def ver_historial(request):
     #Mostrar todos los historiales de vacunacion
 
     #Busco el dni
-    us=list(Usuario.objects.filter(id=request.user.id))
+    #us=list(Usuario.objects.filter(id=request.user.id))
+    #Busco por mail porque User y Usuario comparten ID en algunos casos pero no en todos
+    #Lo que sabemos que si o si tienen en comun es el mail, (En este sistena, en User, username tambien es el mail)
+    us=list(Usuario.objects.filter(email=request.user.email))
+
+
     dni=us[int(0)].dni
 
     #Busco los 3 historiales
@@ -575,6 +595,7 @@ def ver_historial(request):
     his_gripe=list(HistorialGripe.objects.filter(usuario=dni))
 
     return render(request, "gestion_usuarios/historial.html", {"historial_covid": his_covid, "historial_fiebre_a": his_fiebre_a, "historial_gripe": his_gripe})
+
     
 def iniciar_sesion_vacunador(request):
     if request.method=="POST":
@@ -659,6 +680,10 @@ def marcar_turno(request):
             if estado == "completo":
                 #actualizo el estado del turno a completo
                 #Se agregan las "Observaciones" al turno, si es que hay
+                #Actualizo el historial del usuario
+                #Si no tiene datos, creo un historial dependiendo la vacuna
+                #Si tiene datos (ej gripe, fecha de ultima aplicacion), los actualizo
+                
                 #Como busco el turno? 
                 pass
             else:

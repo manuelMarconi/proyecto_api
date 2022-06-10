@@ -6,25 +6,25 @@
         <p> Estatus de turno </p>
         
 
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
         {% if turnos %}
             {% for turno in turnos %}
-            <li> <p>  Vacuna a aplicar: {{turno.vacuna}} </p>
-                <p> Nombre de persona a vacunar: {{usuario.apellido}}, {{usuario.nombre}} </p>
-                <p> Vacunatorio: {{turno.vacunatorio}} </p>
-                <p> Fecha: {{turno.fecha}} </p>
-                <p> Hora: {{turno.hora}} </p> 
-                <p> Estado: {{turno.estado}} </p> </li>
+            <li> <b>Vacuna a aplicar:</b> {{turno.vacuna}} </li>
+            <li> <b> Vacunatorio: </b> {{turno.vacunatorio}} </li>
+            <li> <b> Fecha: </b>{{turno.fecha}} </li>
+            <li> <b> Hora: </b>{{turno.hora}} </li> 
                 
-            
+            <p></p>
             {% endfor %}
 
         {% else %} 
         No hay turnos para mostrar
         {% endif %}        
-        <p>                
-            <a href="{% url 'inicio' %}">Volver a inicio</a>
-        </p> 
+        <p style="text-align:center">       
+            <a href="{% url 'inicio' %}">
+                Volver a inicio
+            </a>
+        </p>
     </body>
 </html>
 {% endblock %}

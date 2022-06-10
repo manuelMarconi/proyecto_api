@@ -4,32 +4,38 @@
 <html>
     <body>
 
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
         
-      
-        <p> Subir historial de vacunacion: Vacuna del coronavirus. </p>
+        <p style="text-align:center">
+            <u><b> Vacuna del coronavirus </b></u> 
+        </p>
 
 
         <form action="/covid" method="POST"> {% csrf_token %}
-            <p> Cantidad de dosis aplicadas: 
+            <li> Cantidad de dosis aplicadas: 
                 <select name="cantidad_dosis">
                     <option value="0">0 dosis</option>
                     <option value="1">1 dosis</option>
                     <option value="2">2 dosis</option>
                   </select>
-                </p> 
-
-            <p> ¿Posee alguna enfermedad de riesgo?
+                </li> 
+            <p></p>
+            <li> ¿Posee alguna enfermedad de riesgo?
                 <select name="si_o_no">
                     <option value="si">Si</option>
                     <option value="no">No</option>
                   </select>
+                </li>
+
+
+            <p style="text-align:center">       
+                <input type="submit" value="Pedir turno">
             </p>
 
-
-            <input type="submit" value="Pedir turno">
-            <p>                
-                <a href="{% url 'inicio' %}">Volver a inicio</a>
+            <p style="text-align:center">       
+                <a href="{% url 'inicio' %}">
+                    Volver a inicio
+                </a>
             </p> 
     
         </form>

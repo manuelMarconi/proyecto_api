@@ -3,46 +3,64 @@
 {% block content %}
 <html>
     <body>
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
-        <p> Historial de vacunación: </p>
-        <p> Vacuna del coronavirus: </p>
-        {% if historial_covid %}    
-            <li>
-                <p> Cantidad de dosis recibidas: {{historial_covid.cantidad_dosis}}</p> 
-                {% if historial_covid.fecha_primeradosis %}
-                    <p> Fecha de aplicación de la primera dosis: {{historial_covid.fecha_primeradosis}}</p>
-                {% endif %}
-                {% if historial_covid.fecha_segundadosis %}
-                    <p> Fecha de aplicación de la segunda dosis: {{historial_covid.fecha_segundadosis}}</p>
-                {% endif %}
-            </li>
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
 
-        {% else %} 
-        <p> No hay historial para mostrar </p> 
-        {% endif %}  
+        <p style="text-align:center">
+            <u><b>Historial de vacunación</b></u> 
+        </p>
 
 
-        <p> Vacuna de la fiebre amarilla: </p>
-        {% if historial_fiebre_a %}
-            {% if historial_fiebre_a.fecha_aplicacion_fiebre_a %} 
-            <p> Fecha de aplicación de la vacuna de la fiebre amarilla: {{historia_fiebre_a.fecha_aplicacion_fiebre_a}}</p>
-            {% endif %}
-
-        {% else %} 
-        <p> No hay historial para mostrar </p> 
-        {% endif %}  
-
-        <p> Vacuna de la gripe: </p>
-        {% if historial_gripe %}
-            {% if historial_gripe.fecha_aplicacion_gripe %} 
-            <p> Fecha de la última aplicación de la vacuna de la gripe: {{historia_gripe.fecha_aplicacion_gripe}}</p>
-            {% endif %}
-        {% else %} 
-        <p> No hay historial para mostrar </p> 
-        {% endif %} 
         
-        <p>                
-            <a href="{% url 'inicio' %}">Volver a inicio</a>
+        <ul>
+            <p> <li> <b> Vacuna del coronavirus: </b> </li> </p>
+            {% if historial_covid %}  
+                {% for historial_c in historial_covid %}   
+                    <p> <u>Cantidad de dosis recibidas</u>: {{historial_c.cantidad_dosis}}</p> 
+                    {% if historial_c.fecha_primeradosis %}
+                        <p> <u>Fecha de aplicación de la primera dosis</u>: {{historial_c.fecha_primeradosis}}</p>
+                    {% endif %}
+                    {% if historial_c.fecha_segundadosis %}
+                        <p>  <u>Fecha de aplicación de la segunda dosis</u>: {{historial_c.fecha_segundadosis}}</p>
+                    {% endif %}
+                {% endfor %}
+    
+    
+            {% else %} 
+            <p> No hay historial para mostrar </p> 
+            {% endif %}  
+
+    
+            <p> <li> <b> Vacuna de la fiebre amarilla: </b> </li> </p>
+            {% if historial_fiebre_a %}
+                {% for historial_f in historial_fiebre_a %}  
+                    {% if historial_f.fecha_aplicacion_fiebre_a %} 
+                        <p> <u>Fecha de aplicación</u>: {{historial_f.fecha_aplicacion_fiebre_a}} </p>
+                    {% endif %}              
+                {% endfor %}
+    
+            {% else %} 
+                <p> No hay historial para mostrar </p> 
+            {% endif %}  
+
+            
+            <p> <li> <b> Vacuna de la gripe: </b> </li> </p>
+            {% if historial_gripe %}
+                {% for historial_g in historial_gripe %}  
+                    {% if historial_g.fecha_aplicacion_gripe %} 
+                        <p> <u>Fecha de la última aplicación</u>: {{historial_g.fecha_aplicacion_gripe}}</p>
+                    {% endif %}
+                {% endfor %}
+            {% else %} 
+            <p> No hay historial para mostrar </p> 
+            {% endif %} 
+    
+
+        </ul>
+        
+        <p style="text-align:center">       
+            <a href="{% url 'inicio' %}">
+                Volver a inicio
+            </a>
         </p> 
 
     </span>
