@@ -7,7 +7,7 @@
     <ul class="messages">
         {% for message in messages %}
         <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-            <span style="background-color: rgb(39, 166, 4); float: left; margin-left: 400px;text-align: right""> 
+            <span style="background-color: rgb(39, 166, 4); float: left; margin-left: 400px;text-align: right"> 
                 {{ message }}
             </span>
         </span>
@@ -24,7 +24,7 @@
             </p>
                 
             <li>                
-                <a href="{% url 'mi_perfil' %}">Mi perfil </a>
+                <a href="{% url 'mi_perfil' %}"> Mi perfil </a>
             </li>
             <li>                
                 <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
