@@ -11,8 +11,18 @@
                     Y los que no desea actualizar solo complete con su informacion
                 </p>
             </em>
-            
-
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        <span style="background-color: rgb(251, 133, 3)"> 
+                            {{ message }}
+                        </span>
+                    </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                    {% endif %}
             <p>
                 Nombre: <input type="text" name="nombre" value={{form.nombre.value}}> 
             </p>
