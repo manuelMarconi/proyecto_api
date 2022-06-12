@@ -10,16 +10,28 @@
             </p>
         {% if turnos %}
             {% for turno in turnos %}
-            <li> <b>Vacuna a aplicar:</b> {{turno.vacuna}} </li>
-            <li> <b> Vacunatorio: </b> {{turno.vacunatorio}} </li>
-            {% if turno.fecha %}
-                <li> <b> Fecha: </b>{{turno.fecha}} </li>
-                <li> <b> Hora: </b>{{turno.hora}} </li>
-            {% else %}
-                <li> <b> Fecha: </b>A confirmar </li>
-                <li> <b> Hora: </b>A confirmar  </li> 
-            {% endif %}
-            <p></p>
+                {% if turno.estado == 'Asignado' or turno.estado == 'Pendiente' %}
+                    <li> <b>Vacuna a aplicar:</b> {{turno.vacuna}} </li>
+                    <li> <b> Vacunatorio: </b> {{turno.vacunatorio}} </li>
+                    {% if turno.fecha %}
+                        <li> <b> Fecha: </b>{{turno.fecha}} </li>
+                        <li> <b> Hora: </b>{{turno.hora}} </li>
+                    {% else %}
+                        <li> <b> Fecha: </b>A confirmar </li>
+                        <li> <b> Hora: </b>A confirmar  </li> 
+                    {% endif %}
+
+                {% else %}
+                    {% if turno.estado == 'Completo' %}
+                        <li> Su turno de la vacuna: <b>{{turno.vacuna}}</b> ya fue completado. </li>
+                        <p> </p>
+                    {% else %}
+                        <li> Su turno de la vacuna: {{turno.vacuna}} no fue completado. Si desea un turno, debe volver a pedirlo. </li>
+                        <p> </p>
+                    {% endif %}
+                {% endif %}
+            
+                <p></p>
             {% endfor %}
 
         {% else %} 
