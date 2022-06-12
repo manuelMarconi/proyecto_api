@@ -12,8 +12,10 @@
                     {% endfor %}
                 </ul>
                     {% endif %}
+
+            
         <form action="/registrarse" method="POST"> {% csrf_token %}
-            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
           
 
             <p>
@@ -25,11 +27,11 @@
             </p>
 
             <p>
-                DNI: <input type="text" name="dni"> 
+                DNI:<input type="text" name="dni"> 
             </p>
 
             <p>
-                Fecha de nacimiento: <input type="text" name="fecha_nacimiento"> 
+                Fecha de nacimiento:<input type="date" name="fecha_nacimiento"> 
             </p>
 
             <p> Vacunatorio:
@@ -45,17 +47,19 @@
     
         
             <p>
-                Contraseña: <input type="text" name="contraseña1"> 
+                Contraseña: <input type="password" name="contraseña1">
             </p>
-
             <p>
-                Por favor, repita la contraseña: <input type="text" name="contraseña2"> 
+                Por favor, repita la contraseña: <input type="password" name="contraseña2"> 
             </p>
-    
-            <input type="submit" value="Registrarme">
+            <p style="text-align:center">       
+                <input type="submit" value="Registrarme">
+            </p>
 
-            <p>                
-                <a href="{% url 'inicio' %}">Volver a inicio</a>
+            <p style="text-align:center">       
+                <a href="{% url 'inicio' %}">
+                    Volver a inicio
+                </a>
             </p> 
         </form>
     </body>

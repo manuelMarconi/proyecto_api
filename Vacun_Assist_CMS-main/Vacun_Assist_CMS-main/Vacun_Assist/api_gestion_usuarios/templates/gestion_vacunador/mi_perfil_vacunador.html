@@ -1,0 +1,20 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <p style="text-align:center">
+        <u><b>Mi perfil</b></u> 
+    </p>
+    <ul>
+    <li> <b>Nombre:</b> {{vacunador.nombre}} </li>
+    <li> <b>Apellido:</b> {{vacunador.apellido}} </li>
+    <li> <b>Vacunatorio:</b> {{vacunador.vacunatorio}} </li>
+    <li> <b>Email:</b> {{vacunador.email}} </li>
+    </ul>
+    <p style="text-align:center">                
+        <a href="{% url 'inicio_vac' %}">Volver a inicio</a>
+    </p> 
+</span>
+</html>
+{% endblock %}

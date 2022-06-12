@@ -4,50 +4,44 @@
 <html>
     <body>
         <form action="/modificar_perfil" method="POST"> {% csrf_token %}
-            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
+            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left:400px ;text-align: left">
             <em>
                 <p>
                     Modifique los datos que le sean Necesarios </br>
                     Y los que no desea actualizar solo complete con su informacion
                 </p>
             </em>
-            
+
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            <span style="background-color: rgb(251, 133, 3)"> 
+                                {{ message }}
+                                </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                    {% endif %}
 
             <p>
-                Nombre: <input type="text" name="nombre"> 
+                Nombre: <input type="text" name="nombre" value={{form.nombre.value}}> 
             </p>
 
             <p>
-                Apellido: <input type="text" name="apellido"> 
-            </p>
-
-            <p>
-                DNI: <input type="text" name="dni"> 
-            </p>
-
-            <p>
-                Fecha de nacimiento: <input type="text" name="fecha_nacimiento"> 
+                Apellido: <input type="text" name="apellido" value={{form.apellido.value}}> 
             </p>
 
             <p> Vacunatorio:
-            <select name="direccion">
-                <option value="Zona municipalidad">51 e/ 10  y 11 nro 770</option>
-                <option value="Zona cementerio" selected>138 e/ 73 y 74 nro 2035</option>
-                <option value="Zona terminal de omnibus">3 e/ 41 y 42 nro 480</option>
-              </select>
-            </p>
-    
+                {{form.direccion}}
+            </p>        
             <p>
-                Email: <input type="text" name="email"> 
-            </p>
-    
-        
-            <p>
-                Contraseña: <input type="text" name="contraseña1"> 
+                Contraseña: <input type="password" name="contraseña1" value={{form.contraseña1.value}}> 
             </p>
 
             <p>
-                Por favor, repita la contraseña: <input type="text" name="contraseña2"> 
+                Por favor, repita la contraseña: <input type="password" name="contraseña2" value={{form.contraseña1.value}}> 
             </p>
     
             <input type="submit" value="Modificar">

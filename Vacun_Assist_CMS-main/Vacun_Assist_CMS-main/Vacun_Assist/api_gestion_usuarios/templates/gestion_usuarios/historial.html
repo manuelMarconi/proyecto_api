@@ -1,0 +1,74 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <body>
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+
+        <p style="text-align:center">
+            <u><b>Historial de vacunación</b></u> 
+        </p>
+
+
+        
+        <ul>
+            <p> <li> <b> Vacuna del coronavirus: </b> </li> </p>
+            {% if historial_covid %}  
+                {% for historial_c in historial_covid %}   
+                    <p> <u>Cantidad de dosis recibidas</u>: {{historial_c.cantidad_dosis}}</p> 
+                    {% if historial_c.fecha_primeradosis %}
+                        <p> <u>Fecha de aplicación de la primera dosis</u>: {{historial_c.fecha_primeradosis}}</p>
+                    {% endif %}
+                    {% if historial_c.fecha_segundadosis %}
+                        <p>  <u>Fecha de aplicación de la segunda dosis</u>: {{historial_c.fecha_segundadosis}}</p>
+                    {% endif %}
+                {% endfor %}
+    
+    
+            {% else %} 
+            <p> No hay historial para mostrar </p> 
+            {% endif %}  
+
+    
+            <p> <li> <b> Vacuna de la fiebre amarilla: </b> </li> </p>
+            {% if historial_fiebre_a %}
+                {% for historial_f in historial_fiebre_a %}  
+                    <p> <u>Se aplico: </u> {{historial_f.si_o_no}} </p>
+                    {% if historial_f.fecha_aplicacion_fiebre_a %} 
+                    <p> <u>Fecha de aplicación</u>: {{historial_f.fecha_aplicacion_fiebre_a}} </p>
+                    {% else %}
+                    <p> <u>Fecha de aplicación</u>: A confirmar </p>
+                    {% endif %}
+                {% endfor %}
+    
+            {% else %} 
+                <p> No hay historial para mostrar </p> 
+            {% endif %}  
+
+            
+            <p> <li> <b> Vacuna de la gripe: </b> </li> </p>
+            {% if historial_gripe %}
+                {% for historial_g in historial_gripe %}  
+                    {% if historial_g.fecha_aplicacion_gripe %} 
+                        <p> <u>Fecha de la última aplicación</u>: {{historial_g.fecha_aplicacion_gripe}}</p>
+                    {% endif %}
+                {% endfor %}
+            {% else %} 
+            <p> No hay historial para mostrar </p> 
+            {% endif %} 
+    
+
+        </ul>
+        
+        <p style="text-align:center">       
+            <a href="{% url 'inicio' %}">
+                Volver a inicio
+            </a>
+        </p> 
+
+    </span>
+    </body>
+
+
+</html>
+{% endblock %}

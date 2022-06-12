@@ -1,15 +1,13 @@
 {% extends "gestion_usuarios/base.html" %}
 
 {% block content %}
-<html>
-    
-    <body >
-        
+<html>   
+    <body > 
         {% if messages %}
     <ul class="messages">
         {% for message in messages %}
         <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-            <span style="background-color: rgb(253, 246, 44)"> 
+            <span style="background-color: rgb(39, 166, 4); float: left; margin-left: 400px;text-align: right"> 
                 {{ message }}
             </span>
         </span>
@@ -19,26 +17,41 @@
         {% endif %}
     
         {% if user.is_authenticated %}
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: right">
- 
-
-            <p>                
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+            
+            <p style="text-align:center">
+                <u><b>Mis datos</b></u> 
+            </p>
+                
+            <li>                
+                <a href="{% url 'mi_perfil' %}"> Mi perfil </a>
+            </li>
+            <li>                
                 <a href="{% url 'modificar_perfil' %}"> Modificar perfil </a>
-            </p>
-            <p>                
+            </li>
+            <li>                
                 <a href="{% url 'estatus_turno' %}"> Estatus de mis turnos</a>
-            </p> 
+            </li> 
+            <li>                
+                <a href="{% url 'historial' %}"> Ver historial de vacunación </a>
+            </li>
 
-            <p> Sacar turno:</p>
-            <p>  
+            <p style="text-align:center">
+                <u><b>Sacar turno</b></u> 
+            </p>
+            <li>  
                <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
-            </p>
-            <p>
-                <a href="{% url 'fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
-            </p>   
-            <p>                
+            </li>
+            <li>
+                <a href="{% url 'fiebre_a' %}"> Cargar información sobre historial de vacunación de fiebre amarilla</a>
+            </li>
+            <li>
+                <a href="{% url 'turno_fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
+            </li>   
+            <li>                
                 <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>
-            </p>
+            </li>
+            <p> </p>
             <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
         </span>
         {% else %}

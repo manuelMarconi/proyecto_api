@@ -1,0 +1,45 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    
+    <body >
+        
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            <span style="background-color: rgb(253, 246, 44)"> 
+                {{ message }}
+            </span>
+        </span>
+        </li>
+        {% endfor %}
+    </ul>
+        {% endif %}
+    
+        {% if user.is_authenticated %}
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+            <p> </p>
+            <li>                
+                <a href="{% url 'mi_perfil_vacunador' %}"> Mi perfil </a>
+            </li>
+            <p> </p>
+            <li>                
+                <a href="{% url 'agregar_persona' %}"> Agregar persona al sistema  </a>
+            </li>
+            <p> </p>
+            <li>                
+                <a href="{% url 'turnos_dia' %}"> Turnos del día </a>
+            </li>
+
+            <p></p>
+            <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
+        </span>
+   
+        {% endif %}
+
+    </body>
+</html>
+{% endblock %}
+

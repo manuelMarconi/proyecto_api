@@ -1,0 +1,41 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <body>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <p style="text-align:center">
+        <u><b> Turnos del día </b></u> 
+    </p>
+
+    {% if turnos %}
+    <ul> 
+        {% for turno in turnos %}         
+        <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+        <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+        <li> <b> Hora: </b> {{turno.hora}} </li>
+        <p style="text-align:center">                
+            <a href="{% url 'marcar_turno' %}"> Cambiar estado de turno</a>
+        </p> 
+    </span>
+        {% endfor %}
+    </ul>
+
+    {% else %} 
+        No hay turnos registrados para este día
+
+    {% endif %}  
+
+
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_vac' %}">
+            Volver a inicio
+        </a>
+    </p> 
+
+    </span>
+    </body>
+
+ 
+</html>
+{% endblock %}

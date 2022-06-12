@@ -19,11 +19,23 @@ class FormularioRegistro(forms.Form):
     contraseña1=forms.CharField(max_length=30)
     contraseña2=forms.CharField(max_length=30)
 
+class FormularioModificar(forms.Form):
+
+    nombre=forms.CharField(max_length=30)
+    apellido=forms.CharField(max_length=30)
+    direccion=forms.ChoiceField(choices = centros_vacunacion, widget=forms.widgets.Select())
+    contraseña1=forms.CharField(max_length=30)
+    contraseña2=forms.CharField(max_length=30)
 
 class FormularioAutenticacion(forms.Form):
     email=forms.EmailField()
     contraseña=forms.CharField(max_length=30)
     codigo=forms.CharField(max_length=4)
+
+
+class FormularioAutenticacionVacunador(forms.Form):
+    email=forms.EmailField()
+    contraseña=forms.CharField(max_length=30)
 
 
 class FormularioCovid(forms.Form):
@@ -32,11 +44,18 @@ class FormularioCovid(forms.Form):
     si_o_no=forms.CharField(max_length=10)
 
 class FormularioFiebreA(forms.Form):
-    #En que año se aplico, no se usa
+    #En que año se aplico
     fecha_aplicacion_fiebre_a=forms.DateField()
     si_o_no=forms.CharField(max_length=10)
 
 
 class FormularioGripe(forms.Form):
-    #Fecha de la ultima aplicacion, no se usa
+    #Fecha de la ultima aplicacion
     fecha_aplicacion_gripe=forms.DateField()
+    si_o_no=forms.CharField(max_length=10)
+
+class FormularioEstadoTurno(forms.Form):
+    estado=forms.CharField(max_length=30)
+    observaciones=forms.Textarea()
+
+
