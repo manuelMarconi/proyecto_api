@@ -263,7 +263,7 @@ def cargar_info_fiebre_a(request):
             infForm=miFormulario.cleaned_data
 
             #Chequeo que no tenga un turno previo
-            tur=tieneTurno(request, 'Fiebre amarilla')
+            tur=tieneTurno(request, 'Fiebre amarilla')            
             if tur == True:
                 messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de fiebre amarilla') 
                 return redirect('inicio')
