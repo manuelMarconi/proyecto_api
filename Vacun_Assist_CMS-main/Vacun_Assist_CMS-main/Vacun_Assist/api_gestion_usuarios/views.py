@@ -47,7 +47,7 @@ def registro(request):
             #Validar que las contraseñas son iguales 
             
             
-            if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']<8: #si es menor a 8tambien debe entrar al if
+            if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']< int(6): #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html",{"form":miFormulario})
 
@@ -490,29 +490,35 @@ def modificar_perfil(request):
         if miFormularioNuevo.is_valid():
             infForm=miFormularioNuevo.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
             #Validar igualdad de contraseñas
-            if (infForm['contraseña1']==infForm['contraseña2']):
-                
-                #modificamos al User para no tener problemas en el inicio de sesion 
-                
-                user=User.objects.filter(username=usuarioModificar.email)
-                user=user[0]
-                user.set_password(infForm['contraseña1'])
-                user.save()
-                login(request,user)
-                
-                #modificamos al Usuario
-                
-                usuarioModificar.contraseña=infForm['contraseña1']
-                usuarioModificar.direccion=infForm['direccion']
-                usuarioModificar.nombre=infForm['nombre']
-                usuarioModificar.apellido=infForm['apellido']
-                usuarioModificar.save()
-                messages.add_message(request, messages.SUCCESS, 'Usuario modificado correctamente')
-                return redirect('inicio')
-            else:
-                #si las contraseñas no cohinciden salta mensaje de error
-                messages.add_message(request, messages.ERROR, 'Las contraseñas no cohinciden')
+            numero = int(6)
+            if (int(infForm['contraseña1']) < int(numero)): 
+                #si la contraseña es menor a 6 salta mensaje de error
+                messages.add_message(request, messages.ERROR, 'La contraseña debe tener minimo 6 caracteres')
                 return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
+            else: 
+                if (infForm['contraseña1']==infForm['contraseña2']) and (int(infForm['contraseña1']) >= int(numero)):
+                    
+                    #modificamos al User para no tener problemas en el inicio de sesion 
+                    
+                    user=User.objects.filter(username=usuarioModificar.email)
+                    user=user[0]
+                    user.set_password(infForm['contraseña1'])
+                    user.save()
+                    login(request,user)
+                    
+                    #modificamos al Usuario
+                    
+                    usuarioModificar.contraseña=infForm['contraseña1']
+                    usuarioModificar.direccion=infForm['direccion']
+                    usuarioModificar.nombre=infForm['nombre']
+                    usuarioModificar.apellido=infForm['apellido']
+                    usuarioModificar.save()
+                    messages.add_message(request, messages.SUCCESS, 'Usuario modificado correctamente')
+                    return redirect('inicio')
+                else:
+                    #si las contraseñas no cohinciden salta mensaje de error
+                    messages.add_message(request, messages.ERROR, 'Las contraseñas no coinciden')
+                    return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
         else:
             #aca entra si el usuario deja celdas en blanco o inserta valores no validos
             messages.add_message(request, messages.ERROR, 'Complete todas las casillas')
@@ -598,7 +604,7 @@ def iniciar_sesion_vacunador(request):
                     #return redirect('inicio_vacunador')
                     return render (request, "gestion_vacunador/inicio_vac.html")
 
-                else:
+                else: # no entra nunca aca ??
                     messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
                     return render(request, "autenticacion/login_vacunador.html")          
             else:
