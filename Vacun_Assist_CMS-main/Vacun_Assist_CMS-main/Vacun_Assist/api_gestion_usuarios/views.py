@@ -701,7 +701,7 @@ def agregar_persona(request):
         miFormulario=FormularioRegistroVacunacion(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
-             
+            # prueba de carla
             #Validar si el mail no esta en la base de datos
             us=list(Usuario.objects.filter(email=infForm['email']))
             
