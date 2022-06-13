@@ -45,6 +45,9 @@ class Turno(models.Model):
 
 class Codigos(models.Model):
     codigo=models.CharField(max_length=4)
+    
+    def __str__(self):
+        return 'Codigo: %s' % self.codigo
 
 class Vacunador(models.Model):
     nombre=models.CharField(max_length=30)
