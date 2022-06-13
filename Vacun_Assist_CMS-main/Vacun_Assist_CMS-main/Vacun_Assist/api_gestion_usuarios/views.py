@@ -746,7 +746,7 @@ def agregar_persona(request):
                 #turno=Turno(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est, observaciones=obs)
                 #turno.save()
                 Turno.objects.create(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado="Completo")
-               
+                #Prueba
                 
                 #Aca se actualiza el historial del usuario, dependiendo de la vacuna
                 
