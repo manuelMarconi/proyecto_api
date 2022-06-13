@@ -23,6 +23,8 @@ from datetime import date, datetime, timedelta, time
 
 # prueba carla
 
+#prueba carla 2
+
 # Create your views here.
 def inicio(request):
     return render(request, "gestion_usuarios/inicio.html")
