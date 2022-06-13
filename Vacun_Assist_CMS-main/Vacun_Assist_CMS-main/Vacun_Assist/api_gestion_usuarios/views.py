@@ -291,7 +291,7 @@ def cargar_info_covid(request):
                 turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
                 turno.save()
 
-                messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
                 return redirect('inicio')
             
       #  return render(request, "cargar_info/info_covid.html")
