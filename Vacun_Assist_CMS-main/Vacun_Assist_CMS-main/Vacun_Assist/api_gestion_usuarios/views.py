@@ -296,7 +296,7 @@ def cargar_info_covid(request):
 def cargar_info_fiebre_a(request):
     if request.method=="POST":
         his=tiene_historial_fiebre_a(request)
-        if his == True:
+        if his == True: #siempre chequea esto ponga que si o ponga que no
             messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
             return redirect('inicio')
         miFormulario=FormularioFiebreA(request.POST)
@@ -307,6 +307,7 @@ def cargar_info_fiebre_a(request):
             tur=tieneTurno(request, 'Fiebre amarilla')            
             if tur == True:
                 messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de fiebre amarilla') 
+                return redirect('inicio')   
 
         #Busco al dni del usuario de la sesion
         us=list(Usuario.objects.filter(email=request.user.email))
