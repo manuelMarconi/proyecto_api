@@ -490,13 +490,14 @@ def modificar_perfil(request):
         if miFormularioNuevo.is_valid():
             infForm=miFormularioNuevo.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
             #Validar igualdad de contraseñas
-            numero = int(6)
-            if (int(infForm['contraseña1']) < int(numero)): 
+            contra1=infForm['contraseña1']
+            contra2=infForm['contraseña2']
+            if (len(contra1) < 6): 
                 #si la contraseña es menor a 6 salta mensaje de error
                 messages.add_message(request, messages.ERROR, 'La contraseña debe tener minimo 6 caracteres')
                 return render(request, "gestion_usuarios/modificar_perfil.html",{'form':miFormulario})
             else: 
-                if (infForm['contraseña1']==infForm['contraseña2']) and (int(infForm['contraseña1']) >= int(numero)):
+                if (contra1==contra2) and (len(contra1)>= 6):
                     
                     #modificamos al User para no tener problemas en el inicio de sesion 
                     
