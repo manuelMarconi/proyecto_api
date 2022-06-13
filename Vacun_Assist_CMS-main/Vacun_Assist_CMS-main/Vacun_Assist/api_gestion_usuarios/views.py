@@ -300,6 +300,14 @@ def cargar_info_fiebre_a(request):
             messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
             return redirect('inicio')
         miFormulario=FormularioFiebreA(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data
+
+            #Chequeo que no tenga un turno previo
+            tur=tieneTurno(request, 'Fiebre amarilla')            
+            if tur == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de fiebre amarilla') 
+
         #Busco al dni del usuario de la sesion
         us=list(Usuario.objects.filter(email=request.user.email))
         dni=us[int(0)].dni
