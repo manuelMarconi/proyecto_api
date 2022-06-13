@@ -225,7 +225,7 @@ def cargar_info_covid(request):
 
             #Chequeo que no tenga un turno previo
             tur=tieneTurno(request, 'Coronavirus')
-            if tur == True:
+            if tur == True: # si ya tiene historial y tiene turno, no entra nunca aca igual, entra al primer if (carla)
                 messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de coronavirus') 
                 return redirect('inicio')
              
@@ -241,42 +241,42 @@ def cargar_info_covid(request):
             cantidad_dosis= int(infForm['cantidad_dosis'])
             paciente_riesgo= infForm['si_o_no']
 
+            if usuario_edad < 18:
+                messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
+                return redirect('inicio')
+
             #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
             historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis)
             historial.save()
 
-
             if cantidad_dosis == 2:
-                messages.add_message(request, messages.ERROR, 'ERROR No puede recibir las vacunas porque tiene todas las dosis correspondientes') 
+                messages.add_message(request, messages.ERROR, 'ERROR No puede recibir mas vacunas de coronavirus porque tiene todas las dosis correspondientes') 
                 return redirect('inicio')
             
-            if usuario_edad < 18:
-                messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
-                return redirect('inicio')
-            else:
-                if usuario_edad < 60:
+            
+            if usuario_edad < 60:
 
-                    if paciente_riesgo == 'si':
-                        #Menor de 60, con riesgo
+                if paciente_riesgo == 'si':
+                     #Menor de 60, con riesgo
                         #Asigno el turno
-                        dia_actual=datetime.now()
-                        fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
-                        hora=random.randint(8,16)
-                        hora_turno=time(hour=hora,minute=30)
-                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
-                        turno.save()
-                        messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
-                        return redirect('inicio')
+                    dia_actual=datetime.now()
+                    fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
+                    hora=random.randint(8,16)
+                    hora_turno=time(hour=hora,minute=30)
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                    turno.save()
+                    messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
+                    return redirect('inicio')
 
-                    else:
+                else:
                         #Menor de 60, sin riesgo
                         #El turno lo asigna manualmente el administrador
                         #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
-                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente')
-                        turno.save()
-                        messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
-                        return redirect('inicio')
-                else: 
+                    turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente')
+                    turno.save()
+                    messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
+                    return redirect('inicio')
+            else: 
                     #Mayor de 60
                     #Se asigna un turno
 
@@ -284,16 +284,15 @@ def cargar_info_covid(request):
                     #hora = datetime.time(21, 15)
                     #hora.isoformat() : '21:15:00'
 
-                    dia_actual=datetime.now()
-                    fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
+                dia_actual=datetime.now()
+                fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
+                hora=random.randint(8,16)
+                hora_turno=time(hour=hora,minute=30)
+                turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                turno.save()
 
-                    hora=random.randint(8,16)
-                    hora_turno=time(hour=hora,minute=30)
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
-                    turno.save()
-
-                    messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
-                    return redirect('inicio')
+                messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
+                return redirect('inicio')
             
       #  return render(request, "cargar_info/info_covid.html")
     else:
