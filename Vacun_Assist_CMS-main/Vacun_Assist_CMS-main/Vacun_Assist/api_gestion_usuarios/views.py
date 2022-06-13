@@ -300,6 +300,14 @@ def cargar_info_fiebre_a(request):
             messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
             return redirect('inicio')
         miFormulario=FormularioFiebreA(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data
+
+            #Chequeo que no tenga un turno previo
+            tur=tieneTurno(request, 'Fiebre amarilla')            
+            if tur == True:
+                messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de fiebre amarilla') 
+
         #Busco al dni del usuario de la sesion
         us=list(Usuario.objects.filter(email=request.user.email))
         dni=us[int(0)].dni
@@ -733,20 +741,19 @@ def agregar_persona(request):
                 user.save()
                 
                 #Aca se saca el turno correspondiente a "vacuna"
-                est=str("Completo")
                 hoy=datetime.now()
                 #obs=str(infForm['observaciones'])
                 #turno=Turno(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est, observaciones=obs)
                 #turno.save()
-                Turno.objects.create(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est)
-               
+                Turno.objects.create(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado="Completo")
+                #Prueba
                 
                 #Aca se actualiza el historial del usuario, dependiendo de la vacuna
                 
                 if infForm['vacuna']  == "Coronavirus":
                     #Vacuna del coronavirus
                     #Depende de las dosis ingresadas, se guarda la fecha de HOY como primera o segunda dosis
-                    if infForm['nro_dosis'] <= 0:
+                    if infForm['nro_dosis'] == 1:
                         historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_primeradosis=hoy.date)
                         historial_covid.save()
                     else:
