@@ -126,8 +126,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="smtp.gmail.com"
+#EMAIL_HOST="smtp.gmail.com"
+#EMAIL_HOST="smtp.live.com"
+EMAIL_HOST="smtp.office365.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
-EMAIL_HOST_USER="vacunassist.cms@gmail.com"
+#EMAIL_PORT=25
+#EMAIL_PORT=465
+#EMAIL_HOST_USER="vacunassist.cms@gmail.com"
+#EMAIL_HOST_PASSWORD="vacunassistcms123"
+EMAIL_HOST_USER="vacun.assist.cms@hotmail.com"
 EMAIL_HOST_PASSWORD="vacunassistcms123"

@@ -64,7 +64,7 @@ def registro(request):
                 user.save()
                 #Envio de email
                 mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio)
-                send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
+                send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro Exitoso')
                 login(request, user)
                 return redirect('inicio')
@@ -181,9 +181,17 @@ def tiene_historial_fiebre_a(request):
     #Busco en la lista HistorialCovid, el historial que corresponde al usuario
     historial=list(HistorialFiebreA.objects.filter(usuario=dni))
 
-    tiene_historial_fiebre_a=False
+    #Uso numeros en vez de un booleano porque hay 3 escenarios posibles:
+    #Devuelve 0 si no subio nada
+    #Devuelve 1 si subio, y marco que ya se vacuno. No puede pedir turno.
+    #Devuelve 2 si subio, y marco que no se vacuno. Puede pedir turno
+    tiene_historial_fiebre_a=0
     if len(historial) != 0:
-        tiene_historial_fiebre_a=True
+        si_o_no=historial[int(0)].si_o_no
+        if si_o_no == 'si':
+            tiene_historial_fiebre_a=1
+        else:
+            tiene_historial_fiebre_a=2
 
     return tiene_historial_fiebre_a
 
@@ -296,7 +304,8 @@ def cargar_info_covid(request):
 def cargar_info_fiebre_a(request):
     if request.method=="POST":
         his=tiene_historial_fiebre_a(request)
-        if his == True: #siempre chequea esto ponga que si o ponga que no
+        #1 y 2 indican que subio informacion, sin importar que subio
+        if his == 1 or his==2: #siempre chequea esto ponga que si o ponga que no
             messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
             return redirect('inicio')
         miFormulario=FormularioFiebreA(request.POST)
@@ -341,11 +350,17 @@ def cargar_info_fiebre_a(request):
 def sacar_turno_fiebre_amarilla(request):
     if request.method=="POST":
         miFormulario=FormularioFiebreA(request.POST)
+        
         #Chequeo que tenga un historial cargado
         his=tiene_historial_fiebre_a(request)
-        if his == False:
+        if his == 0:
             messages.add_message(request, messages.ERROR, 'Por favor, cargue la información correspondiente a la vacuna de la fiebre amarilla') 
             return redirect('inicio')
+        
+        if his == 1:
+            messages.add_message(request, messages.ERROR, 'Usted ya se aplico la dosis corrrespondiente de la vacuna de la fiebre amarilla') 
+            return redirect('inicio')
+        
         #Chequeo que no tenga un turno previo
         tur=tieneTurno(request, 'Fiebre amarilla')
         if tur == True:
@@ -684,6 +699,8 @@ def marcar_turno(request):
                     #Vacuna del coronavirus
                     historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=0, fecha_primeradosis=hoy.date)
                     historial_covid.save()
+                    #Si esta es la primera dosis, se le da turno para la segunda, y se actualiza la cantidad de dosis en el historial
+                    #Si es la segunda dosis, se actualiza el historial con "2" dosis
                 else:
                     if infForm['vacuna']  == "Gripe":
                         #Vacuna de la gripe
@@ -765,6 +782,16 @@ def agregar_persona(request):
                     if infForm['nro_dosis'] == 1:
                         historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_primeradosis=fecha_turno)
                         historial_covid.save()
+                        #Se le da el turno de la segunda dosis de aca a "X" meses
+                        
+                        dia_actual=datetime.now()
+                        fecha_turno_2= dia_actual + timedelta(days=90)
+                        hora=random.randint(8,15)
+                        hora_turno_2= time(hour=hora, minute=45)
+                        
+                        turno=Turno(fecha=fecha_turno_2, hora=hora_turno_2, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado='Asignado')
+                        turno.save()
+                        
                     else:
                         historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_segundadosis=fecha_turno)
                         historial_covid.save()
@@ -775,12 +802,12 @@ def agregar_persona(request):
                         historial_gripe.save()
                     else:
                         #Vacuna de la fiebre amarilla
-                        historial_fiebre=HistorialFiebreA(usuario=infForm['dni'], fecha_aplicacion_fiebre_a=fecha_turno, si_o_no='Si')
+                        historial_fiebre=HistorialFiebreA(usuario=infForm['dni'], fecha_aplicacion_fiebre_a=fecha_turno, si_o_no='si')
                         historial_fiebre.save()
                 
                 #Envio de email
-                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio) + "Y su contraseña es: " + str(contra) + "Le recomendamos cambiar su contraseña" 
-                send_mail('Registro exitoso',mensaje,'vacunassist.cms@gmail.com', [infForm['email']])
+                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio) + " Y su contraseña es: " + str(contra) + ". Le recomendamos cambiar su contraseña." 
+                send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Se registro el usuario y su turno')
                 return render (request, "gestion_vacunador/inicio_vac.html")
             else:

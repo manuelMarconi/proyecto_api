@@ -37,16 +37,16 @@
             <p> <li> <b> Vacuna de la fiebre amarilla: </b> </li> </p>
             {% if historial_fiebre_a %}
                 {% for historial_f in historial_fiebre_a %}
-                    {% if historial_fiebre_a.si_o_no == 'si' %}  
-                        <p> <u>Se aplico: </u> {{historial_f.si_o_no}} </p>
+                    {% if historial_fiebre_a.si_o_no != 'no' %}  
                         {% if historial_f.fecha_aplicacion_fiebre_a %} 
                             <p> <u>Fecha de aplicación</u>: {{historial_f.fecha_aplicacion_fiebre_a}} </p>
                         {% else %}
                             <p> <u>Fecha de aplicación</u>: A confirmar </p>
                         {% endif %}
                     {% else %}
-                        <p> No hay historial para mostrar </p> 
+                        <p> No hay historial para mostrar</p> 
                     {% endif %} 
+                  
                 {% endfor %}
     
             {% else %} 
