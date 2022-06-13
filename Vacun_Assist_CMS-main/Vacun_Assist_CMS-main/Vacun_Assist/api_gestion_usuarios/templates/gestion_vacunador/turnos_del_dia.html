@@ -14,9 +14,14 @@
         <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
         <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
         <li> <b> Hora: </b> {{turno.hora}} </li>
-        <p style="text-align:center">                
-            <a href="{% url 'marcar_turno' %}"> Cambiar estado de turno</a>
-        </p> 
+
+        <li> <u> Cambiar estado</u>:
+            <select name="estado">
+                <option value="completo">Completo</option>
+                <option value="incompleto">Incompleto</option>
+            </select>
+        </li>
+
     </span>
         {% endfor %}
     </ul>

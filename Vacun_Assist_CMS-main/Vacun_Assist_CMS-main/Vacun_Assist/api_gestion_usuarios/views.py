@@ -676,58 +676,6 @@ def observar_turnos_dia(request):
     return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
 
 
-def marcar_turno(request):
-
-    if request.method=="POST":
-        miFormulario=FormularioEstadoTurno(request.POST)
-        if miFormulario.is_valid():
-            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
-
-            estado= infForm['estado']
-
-            if estado == "completo":
-                
-                hoy=datetime.now()
-                #actualizo el estado del turno a completo
-                #Se agregan las "Observaciones" al turno, si es que hay
-                
-                #Actualizo el historial del usuario
-                #No seria con infForm, seria con la informacion del Turno que se marca
-                #La cantidad de dosis depende de las dosis que tenia el usuario antes. Si es 0 o 1, se le suma 1. Si es 2 queda igual
-                if infForm['vacuna']  == "Coronavirus":
-                    #Vacuna del coronavirus
-                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=0, fecha_primeradosis=hoy.date)
-                    historial_covid.save()
-                    #Si esta es la primera dosis, se le da turno para la segunda, y se actualiza la cantidad de dosis en el historial
-                    #Si es la segunda dosis, se actualiza el historial con "2" dosis
-                else:
-                    if infForm['vacuna']  == "Gripe":
-                        #Vacuna de la gripe
-                        historial_gripe=HistorialGripe(usuario=infForm['dni'], fecha_aplicacion_gripe=hoy.date)
-                        historial_gripe.save()
-                    else:
-                        #Vacuna de la fiebre amarilla
-                        historial_fiebre=HistorialFiebreA(usuario=infForm['dni'], fecha_aplicacion_fiebre_a=hoy.date, si_o_no='Si')
-                        historial_fiebre.save()
-                #Si no tiene datos, creo un historial dependiendo la vacuna
-                #Si tiene datos (ej gripe, fecha de ultima aplicacion), los actualizo
-                
-                #Como busco el turno? 
-                pass
-            else:
-                #actualizo el estado del turno a incompleto
-                #Se agregan las "Observaciones" al turno, si es que hay
-                pass
-
-            
-    else:
-        #Si entra al else, seria el formulario vacio, para que llene los datos
-        miFormulario=FormularioEstadoTurno()
-
-    
-    return render(request, "gestion_vacunador/marcar_turno.html", {"form": miFormulario})
-
-
 def agregar_persona(request):
     if request.method=="POST":
         miFormulario=FormularioRegistroVacunacion(request.POST)
