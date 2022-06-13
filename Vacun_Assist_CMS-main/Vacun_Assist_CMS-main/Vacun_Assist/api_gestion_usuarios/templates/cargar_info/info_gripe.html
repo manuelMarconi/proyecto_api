@@ -3,7 +3,6 @@
 {% block content %}
 <html>
     <body>
-
         <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
 
         <p style="text-align:center">
@@ -11,6 +10,18 @@
         </p>
 
         <form action="/gripe" method="POST"> {% csrf_token %}
+            {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            <span style="background-color: rgb(251, 133, 3)"> 
+                                {{ message }}
+                                </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                    {% endif %}
             <li>¿Usted se vacuno contra la gripe?
                 <select name="si_o_no">
                     <option value="si">Si</option>
@@ -18,9 +29,11 @@
                   </select>
                 </li>
             <p></p>
+            
             <li>
                 Fecha de la aplicación de la vacuna: <input type="date" name="fecha_aplicacion_gripe"> 
             </li>
+            
     
             <p style="text-align:center">       
                 <input type="submit" value="Pedir turno">

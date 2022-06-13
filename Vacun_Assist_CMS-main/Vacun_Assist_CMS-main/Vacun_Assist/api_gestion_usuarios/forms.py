@@ -56,6 +56,17 @@ class FormularioGripe(forms.Form):
 
 class FormularioEstadoTurno(forms.Form):
     estado=forms.CharField(max_length=30)
-    observaciones=forms.Textarea()
+    observaciones=forms.Textarea
+     
+
+class FormularioRegistroVacunacion(forms.Form):
+    nombre=forms.CharField(max_length=30)
+    apellido=forms.CharField(max_length=30)
+    dni=forms.CharField(max_length=8)
+    fecha_nacimiento=forms.DateField()
+    email=forms.EmailField()
+    vacuna=forms.CharField(max_length=40)
+    nro_dosis=forms.CharField(max_length=10)
+    observaciones=forms.Textarea
 
 
