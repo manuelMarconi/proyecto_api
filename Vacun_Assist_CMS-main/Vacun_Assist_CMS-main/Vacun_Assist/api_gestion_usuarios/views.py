@@ -708,7 +708,6 @@ def agregar_persona(request):
         miFormulario=FormularioRegistroVacunacion(request.POST)
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data
-            # prueba de carla
             #Validar si el mail no esta en la base de datos
             us=list(Usuario.objects.filter(email=infForm['email']))
             
@@ -736,10 +735,10 @@ def agregar_persona(request):
                 #Aca se saca el turno correspondiente a "vacuna"
                 est=str("Completo")
                 hoy=datetime.now()
-                obs=str(infForm['observaciones'])
+                #obs=str(infForm['observaciones'])
                 #turno=Turno(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est, observaciones=obs)
                 #turno.save()
-                Turno.objects.create(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est, observaciones=obs)
+                Turno.objects.create(fecha=hoy.date, hora=hoy.time, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado=est)
                
                 
                 #Aca se actualiza el historial del usuario, dependiendo de la vacuna
@@ -747,7 +746,7 @@ def agregar_persona(request):
                 if infForm['vacuna']  == "Coronavirus":
                     #Vacuna del coronavirus
                     #Depende de las dosis ingresadas, se guarda la fecha de HOY como primera o segunda dosis
-                    if infForm['nro_dosis'] == 1:
+                    if infForm['nro_dosis'] <= 0:
                         historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_primeradosis=hoy.date)
                         historial_covid.save()
                     else:
