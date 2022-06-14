@@ -136,9 +136,3 @@ EMAIL_PORT=587
 #EMAIL_HOST_PASSWORD="vacunassistcms123"
 EMAIL_HOST_USER="vacun.assist.cms@hotmail.com"
 EMAIL_HOST_PASSWORD="vacunassistcms123"
-
-#EMAIL_HOST_USER="vacun.assist.prueba.cms@hotmail.com"
-#EMAIL_HOST_PASSWORD="vacunassistcms12345"
-
-#EMAIL_HOST_USER="vacun.assist.prueba123456@hotmail.com"
-#EMAIL_HOST_PASSWORD="vacunassistcms12345"
