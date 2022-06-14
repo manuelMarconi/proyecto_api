@@ -8,28 +8,10 @@
         <u><b> Turnos del día </b></u> 
     </p>
 
-    {% if turnos %}
-    <ul> 
-        {% for turno in turnos %}         
-        <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
-        <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
-        <li> <b> Hora: </b> {{turno.hora}} </li>
+    {% block content2 %}
 
-        <li> <u> Cambiar estado</u>:
-            <select name="estado">
-                <option value="completo">Completo</option>
-                <option value="incompleto">Incompleto</option>
-            </select>
-        </li>
 
-    </span>
-        {% endfor %}
-    </ul>
-
-    {% else %} 
-        No hay turnos registrados para este día
-
-    {% endif %}  
+    {% endblock %}  
 
 
     <p style="text-align:center">       

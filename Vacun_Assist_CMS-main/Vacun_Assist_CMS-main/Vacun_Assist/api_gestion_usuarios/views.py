@@ -659,7 +659,7 @@ def mi_perfil_vacunador(request):
 
 
 
-def observar_turnos_dia(request):
+def observar_turnos_dia_viejo(request):
     #Dia actual
     dia_actual=datetime.now()
 
@@ -677,6 +677,87 @@ def observar_turnos_dia(request):
 
     return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
 
+        
+def observar_turnos_dia(request):
+    #Dia actual
+    dia_actual=datetime.now()
+    #Busco ID del vacunador logueado y asi guardo el vacunatorio
+    vac=list(Vacunador.objects.filter(email=request.user.email))
+    #Busco el vacunatorio del vacunador
+    vacunatorio_actual=vac[int(0)].vacunatorio
+    #Busco los turnos del vacunatorio y de la fecha actual, de estado= 'Asignado'
+    turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual, estado='Asignado'))
+
+    for turno in turnos:
+        if request.method=="POST":
+            miFormulario=FormularioEstadoTurno(request.POST)
+            if miFormulario.is_valid():
+                infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+                
+                if infForm['estado'] == 'completo':
+                    #Turno completo
+                    #Cambio el estado del turno
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    tur.estado='Completo'
+                    tur.save()
+                    #Actualizo el historial de vacunacion dependiendo de la vacuna
+                    if turno.vacuna == "Coronavirus":
+                        #Vacuna del coronavirus
+                        #Busco el historial de covid del usuario (turno.usuario_a_vacunar)
+                        #Se supone que si saco un turno el historial se creo en ese momento. Asumimos que existe
+                        hist_covid=list(HistorialCovid.objects.filter(usuario=turno.usuario_a_vacunar))
+                        hist_covid=hist_covid[0]
+                        #Creo un historial nuevo con los mismos datos que tenia
+                        if hist_covid.cantidad_dosis == '0':
+                            #Si tiene 0 dosis ingresadas, esta es su primera dosis
+                            hist_covid.cantidad_dosis=1
+                            hist_covid.fecha_primeradosis=datetime.now()
+                            hist_covid.save()
+                        else:
+                            #Si tiene 1 dosis ingresada esta es su segunda dosis
+                            #Si tiene 2 dosis ingresadas no deberia porque aparecer aca. No lo considero como opcion posible.
+                            hist_covid.cantidad_dosis=2
+                            hist_covid.fecha_segundadosis=datetime.now()
+                            hist_covid.save()
+                        
+                    else:
+                        if turno.vacuna == 'Gripe':
+                            #Vacuna de la gripe
+                            #Actualizar fecha de aplicacion
+                            hist_gripe=list(HistorialGripe.objects.filter(usuario=turno.usuario_a_vacunar))
+                            hist_gripe=hist_gripe[0]
+                            hist_gripe.fecha_aplicacion_gripe=datetime.now()    
+                            hist_gripe.save()                        
+
+                        
+                        else:
+                            if turno.vacuna == 'Fiebre amarilla':
+                                #Vacuna de la fiebre amarilla
+                                #Actualizar fecha de aplicacion y si_o_no
+                                hist_fiebrea=list(HistorialFiebreA.objects.filter(usuario=turno.usuario_a_vacunar))
+                                hist_fiebrea=hist_fiebrea[0]
+                                hist_fiebrea.fecha_aplicacion_fiebre_a=datetime.now()    
+                                hist_fiebrea.si_o_no='si'
+                                hist_fiebrea.save() 
+                    pass
+                else:
+                    #Turno incompleto
+                    #Actualizo el estado del turno.
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    tur.estado='Incompleto'
+                    tur.save()
+                    pass
+        else:
+            miFormulario=FormularioEstadoTurno()
+            return render(request, "gestion_vacunador/turnos_estado.html", {"turno": turno})
+            
+    else:
+        #Si entra al else, seria el formulario vacio, para que llene los datos
+        return render(request, "gestion_vacunador/turnos_del_dia.html")
+        
+    
 
 def agregar_persona(request):
     if request.method=="POST":

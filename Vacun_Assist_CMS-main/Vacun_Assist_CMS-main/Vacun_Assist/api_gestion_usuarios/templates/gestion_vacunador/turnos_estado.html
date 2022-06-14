@@ -1,0 +1,31 @@
+{% extends "gestion_vacunador/turnos_del_dia.html" %}
+
+{% block content2 %}
+<html>
+    <body>
+    
+    <ul> 
+        <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+        <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+        <li> <b> Hora: </b> {{turno.hora}} </li>
+
+        <form action="/turnos_dia" method="POST"> {% csrf_token %}
+            <li> <b>Estado</b>:
+                <select name="estado">
+                    <option value="completo">Completo</option>
+                    <option value="incompleto">Incompleto</option>
+                </select>
+            </li>
+            <p style="text-align:center">       
+                <input type="submit" value="Cambiar estado">
+            </p>
+        </form>
+
+    
+    </ul>
+
+    </body>
+
+ 
+</html>
+{% endblock %}
