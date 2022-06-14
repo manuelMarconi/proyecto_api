@@ -658,26 +658,22 @@ def mi_perfil_vacunador(request):
     return render(request, "gestion_vacunador/mi_perfil_vacunador.html", {"vacunador": vacunador})
 
 
+def mostrar_turno(request, turno, formulario):
+    return render(request, "gestion_vacunador/turno.html", {"turno": turno, "form": formulario})
 
-def observar_turnos_dia_viejo(request):
+def listado_turnos(request):
+    #Esto solo muestra un listado de los turnos, no cambia estado ni nada.
     #Dia actual
     dia_actual=datetime.now()
-
     #Busco ID del vacunador logueado y asi guardo el vacunatorio
-    #vac=list(Vacunador.objects.filter(id=request.user.id))
-    #Lo hago con el mail, porque el ID del vacunador User y el vacunador Vacunador(tabla) no es el mismo
     vac=list(Vacunador.objects.filter(email=request.user.email))
-
     #Busco el vacunatorio del vacunador
     vacunatorio_actual=vac[int(0)].vacunatorio
+    #Busco los turnos del vacunatorio y de la fecha actual, de estado= 'Asignado'
+    turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual, estado='Asignado'))
+    
+    return render(request, "gestion_vacunador/listado_turnos.html", {"turnos": turnos})
 
-    #Busco los turnos del vacunatorio y de la fecha actual
-    turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual))
-
-
-    return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
-
-        
 def observar_turnos_dia(request):
     #Dia actual
     dia_actual=datetime.now()
@@ -688,9 +684,14 @@ def observar_turnos_dia(request):
     #Busco los turnos del vacunatorio y de la fecha actual, de estado= 'Asignado'
     turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual, estado='Asignado'))
 
-    for turno in turnos:
+    cant=len(turnos)
+    cont=0
+    while cont != cant:
+        turno=turnos[int(cont)]
+        cont=cont+1
         if request.method=="POST":
             miFormulario=FormularioEstadoTurno(request.POST)
+            mostrar_turno(request,turno, miFormulario)
             if miFormulario.is_valid():
                 infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
                 
@@ -702,7 +703,7 @@ def observar_turnos_dia(request):
                     tur.estado='Completo'
                     tur.save()
                     #Actualizo el historial de vacunacion dependiendo de la vacuna
-                    if turno.vacuna == "Coronavirus":
+                    if turno.vacuna == 'Coronavirus':
                         #Vacuna del coronavirus
                         #Busco el historial de covid del usuario (turno.usuario_a_vacunar)
                         #Se supone que si saco un turno el historial se creo en ese momento. Asumimos que existe
@@ -750,12 +751,8 @@ def observar_turnos_dia(request):
                     tur.save()
                     pass
         else:
-            miFormulario=FormularioEstadoTurno()
-            return render(request, "gestion_vacunador/turnos_estado.html", {"turno": turno})
-            
-    else:
-        #Si entra al else, seria el formulario vacio, para que llene los datos
-        return render(request, "gestion_vacunador/turnos_del_dia.html")
+            miFormulario=FormularioEstadoTurno()    
+        return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
         
     
 

@@ -3,7 +3,12 @@
 {% block content %}
 <html>
     <body>
-    
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <p style="text-align:center">
+        <u><b> Turnos del día </b></u> 
+    </p>
+
+    {% for turno in turnos %}
     <ul> 
         <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
         <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
@@ -23,7 +28,16 @@
 
     
     </ul>
+    {% endfor %}
 
+
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_vac' %}">
+            Volver a inicio
+        </a>
+    </p> 
+
+    </span>
     </body>
 
  
