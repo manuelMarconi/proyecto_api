@@ -683,6 +683,8 @@ def observar_turnos_dia(request):
     vacunatorio_actual=vac[int(0)].vacunatorio
     #Busco los turnos del vacunatorio y de la fecha actual, de estado= 'Asignado'
     turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual, estado='Asignado'))
+    
+    #ESTO ESTA MAL
 
     cant=len(turnos)
     cont=0
@@ -753,8 +755,7 @@ def observar_turnos_dia(request):
         else:
             miFormulario=FormularioEstadoTurno()    
         return render(request, "gestion_vacunador/turnos_del_dia.html", {"turnos": turnos})
-        
-    
+
 
 def agregar_persona(request):
     if request.method=="POST":
@@ -833,7 +834,7 @@ def agregar_persona(request):
                         historial_fiebre.save()
                 
                 #Envio de email
-                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio) + " Y su contraseña es: " + str(contra) + ". Le recomendamos cambiar su contraseña." 
+                mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio) + " y tu contraseña es: " + str(contra) + ". Le recomendamos cambiar su contraseña." 
                 send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Se registro el usuario y su turno')
                 return render (request, "gestion_vacunador/inicio_vac.html")

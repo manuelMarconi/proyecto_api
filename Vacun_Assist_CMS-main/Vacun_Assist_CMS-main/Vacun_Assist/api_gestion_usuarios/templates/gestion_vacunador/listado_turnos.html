@@ -7,28 +7,30 @@
     <p style="text-align:center">
         <u><b> Turnos del día </b></u> 
     </p>
+    {% if turnos%}
+        {% for turno in turnos %}
+        <ul> 
+            <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+            <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+            <li> <b> Hora: </b> {{turno.hora}} </li>
 
-    {% for turno in turnos %}
-    <ul> 
-        <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
-        <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
-        <li> <b> Hora: </b> {{turno.hora}} </li>
-
-        <form action="/turnos_dia" method="POST"> {% csrf_token %}
-            <li> <b>Estado</b>:
-                <select name="estado">
-                    <option value="completo">Completo</option>
-                    <option value="incompleto">Incompleto</option>
-                </select>
-            </li>
-            <p style="text-align:center">       
-                <input type="submit" value="Cambiar estado">
-            </p>
-        </form>
-    </ul>
+            <form action="/turnos_dia" method="POST"> {% csrf_token %}
+                <li> <b>Estado</b>:
+                    <select name="estado">
+                        <option value="asignado">Asignado</option>
+                        <option value="completo">Completo</option>
+                        <option value="incompleto">Incompleto</option>
+                    </select>
+                </li>
+                <p style="text-align:center">       
+                    <input type="submit" value="Cambiar estado">
+                </p>
+            </form>
+        </ul>
+        {% endfor %}
     {% else %}
         No hay turnos registrados para este día
-    {% endfor %}
+    {% endif %}
 
 
     <p style="text-align:center">       
