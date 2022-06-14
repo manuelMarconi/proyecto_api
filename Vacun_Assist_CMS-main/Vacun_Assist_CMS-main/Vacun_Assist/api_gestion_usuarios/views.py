@@ -222,7 +222,7 @@ def cargar_info_covid(request):
             #Chequeo que no tenga un historial cargado
             his=tiene_historial_covid(request)
             if his == True:
-                messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna del coronavirus') 
+                messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion y tiene turno pendientepara la vacuna del coronavirus') 
                 return redirect('inicio')
 
             #Chequeo que no tenga un turno previo
@@ -307,7 +307,7 @@ def cargar_info_fiebre_a(request):
         his=tiene_historial_fiebre_a(request)
         #1 y 2 indican que subio informacion, sin importar que subio
         if his == 1 or his==2: #siempre chequea esto ponga que si o ponga que no
-            messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la fiebre amarilla') 
+            messages.add_message(request, messages.ERROR, 'Usted ya tiene su informacion cargada y un turno pendiente para la vacuna de fiebre amarilla') 
             return redirect('inicio')
         miFormulario=FormularioFiebreA(request.POST)
         if miFormulario.is_valid():
@@ -411,7 +411,7 @@ def cargar_info_gripe(request):
         #Chequeo que no tenga un historial cargado
         his=tiene_historial_gripe(request)
         if his == True:
-            messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion para la vacuna de la gripe') 
+            messages.add_message(request, messages.ERROR, 'Usted ya cargo su informacion y tiene un turno para la vacuna de la gripe') 
             return redirect('inicio')
         
         #Chequeo que no tenga un turno previo
