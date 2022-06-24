@@ -241,7 +241,7 @@ def cargar_info_covid(request):
                     messages.add_message(request, messages.ERROR, 'No puede restar dosis') 
                     return redirect('inicio')
                 else:
-                    if int(hist_covid.cantidad_dosis) == infForm['cantidad_dosis']:
+                    if int(hist_covid.cantidad_dosis) == infForm['cantidad_dosis']: #ingresa la misma cantidad que tenia
                         messages.add_message(request, messages.ERROR, 'Sin modificacion') 
                         return redirect('inicio')
 
