@@ -4,13 +4,14 @@ from email import message
 import email
 from mmap import PAGESIZE
 import re
+from typing import ParamSpecArgs
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion
-from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin
+from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -26,11 +27,19 @@ from datetime import date, datetime, timedelta, time
 #prueba carla 2
 
 # Create your views here.
+
+
+############
+###DEMO 1###
+############ 
 def inicio(request):
     return render(request, "gestion_usuarios/inicio.html")
 
 def inicio_vacunador(request):
     return render (request, "gestion_vacunador/inicio_vac.html")
+
+def inicio_admin(request):
+    return render (request, "gestion_admin/inicio_admin.html")
 
 
 @method_decorator(csrf_exempt)    
@@ -250,6 +259,7 @@ def cargar_info_covid(request):
                 return redirect('inicio')
 
             #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
+
             historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis)
             historial.save()
 
@@ -338,7 +348,9 @@ def cargar_info_fiebre_a(request):
                     return render(request,"cargar_info/info_fiebre_a.html") 
                 #Si subio una fecha, ya se guarda en el historial
                 #Solo es una aplicación de la vacuna
-                historial=HistorialFiebreA(usuario=dni, fecha_aplicacion_fiebre_a= infForm['fecha_aplicacion_fiebre_a'],si_o_no='si')
+                #Agrego vacuna_externa_fiebre, variable booleana para saber si se la dio en Vacun Assist o en otro lado
+                #Si es True, se la dio en otro lado
+                historial=HistorialFiebreA(usuario=dni, fecha_aplicacion_fiebre_a= infForm['fecha_aplicacion_fiebre_a'],si_o_no='si', vacuna_externa_fiebre=True)
                 historial.save()
                 messages.add_message(request, messages.INFO, 'Su información ha sido guardada')
                 return redirect('inicio')
@@ -492,7 +504,10 @@ def cargar_info_gripe(request):
                 return redirect('inicio')
             else:
                 #No paso el tiempo correspondiente
-                historial=HistorialGripe(usuario=dni, fecha_aplicacion_gripe= request.POST.get('fecha_aplicacion_gripe'))
+                #Agrego vacuna_externa_gripe, variable booleana para saber si se la dio en Vacun Assist o en otro lado
+                #Si es True, se la dio en otro lado
+
+                historial=HistorialGripe(usuario=dni, fecha_aplicacion_gripe= request.POST.get('fecha_aplicacion_gripe'), vacuna_externa_gripe= True)
                 historial.save()
                 messages.add_message(request, messages.ERROR, 'Todavia no paso el tiempo correspondiente para su proxima aplicación de la vacuna') 
                 return redirect('inicio')  
@@ -609,6 +624,10 @@ def ver_historial(request):
 
     return render(request, "gestion_usuarios/historial.html", {"historial_covid": his_covid, "historial_fiebre_a": his_fiebre_a, "historial_gripe": his_gripe})
 
+
+############
+###DEMO 2###
+############
     
 def iniciar_sesion_vacunador(request):
     if request.method=="POST":
@@ -862,6 +881,96 @@ def agregar_persona(request):
         miFormulario=FormularioRegistroVacunacion()
     return render(request, "gestion_vacunador/agregar_persona.html", {"form": miFormulario})
 
+############
+###DEMO 3###
+############
+
+
+def inicio_administrador(request):
+    if request.method=="POST":
+        miFormulario=FormularioAutenticacionAdmin(request.POST)
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+
+            #Se podrian chequear todos los campos por separado
+            admin=list(Administrador.objects.filter(email=infForm['email'], contraseña=infForm['contraseña']))
+            
+            #utilice una lista(q siempre tiene long o 0 o 1) por que de la forma anterior no entraba al if correctamente, se puede cambiar para solo extraer un objeto.
+            if len(admin)>0:
+                username=infForm['email']
+                password=infForm['contraseña'] 
+             
+                user=authenticate(username=username, password=password)
+                if user is not None:  
+             
+                    messages.add_message(request, messages.INFO, 'Inicio de sesion Exitoso')
+                    login(request, user)
+                    #return redirect('inicio_vacunador')
+                    return render (request, "gestion_admin/inicio_admin.html")
+
+                else: # no entra nunca aca ??
+                    messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
+                    return render(request, "autenticacion/login_admin.html")          
+            else:
+                messages.add_message(request, messages.ERROR, 'ERROR usuario y/o contraseña incorrecto')
+                return render(request, "autenticacion/login_admin.html")
+    else:
+        #Si entra al else, seria el formulario vacio, para que llene los datos
+        miFormulario=FormularioAutenticacionAdmin()
+
+    return render(request, "autenticacion/login_admin.html", {"form": miFormulario})
+
+
+def informe_cantidad_persona(request):
+    #Listado:
+    #Se vacunaron "x" cantidad de personas:
+    #Mostrar si o si: DNI y vacunatorio
+    #Podemos mostrar para que quede mejor: Nombre y apellido, fecha de nacimiento
+    #Tambien se puede filtrar por "vacunas externas", las que no se dieron en Vacun Assist y las sube el usuario
+    return render(request, "gestion_admin/informe_cant_personas.html")
+
+def informe_covid(request):
+    #Listado:
+    #Personas que pidieron la vacuna de covid
+    return render(request, "gestion_admin/informe_covid.html")
+
+def informe_fiebre_a(request):
+    #Listado:
+    #Personas que pidieron la vacuna de la fiebre amarilla
+    return render(request, "gestion_admin/informe_fiebre_a.html")
+
+def informe_personas_registradas(request):
+    #Listado:
+    #Personas que se registraron
+    #Filtrar por DNI, vacunatorio.
+    return render(request, "gestion_admin/informe_registro.html")
+
+
+def ver_historial_admin(request):
+    #El admin ve el historial de vacunacion de un usuario
+    #Se busca por DNI, busca los 3 historiales (o los que tenga) y muestra
+    return render(request, "gestion_admin/historial_admin.html")
+
+
+def modificar_nombre_vacunatorio(request):
+    #Modifica el nombre del vacunatorio
+    #Esto ?? 
+    #Idea: armar modelo "Vacunatorio" con nombre y direccion 
+    return render(request, "gestion_admin/modificar_nombre.html")
+
+
+def asignar_turno_covid(request):
+    #Listado de gente que pidio vacuna covid 
+    # + opcion de asignar turno (cambiar el estado del turno existente y asignarle una fecha)
+    # + ver historial de la persona para "aceptar" y "rechazar" el pedido del turno
+    return render(request, "gestion_admin/asignar_covid.html")
+
+
+def asignar_turno_fiebre_a(request):
+    #Listado de gente que pidio vacuna de la fiebre amarilla 
+    # + opcion de asignar turno (cambiar el estado del turno existente y asignarle una fecha)
+    # + ver historial de la persona para "aceptar" y "rechazar" el pedido del turno
+    return render(request, "gestion_admin/asignar_fiebre.html")
 
 
 

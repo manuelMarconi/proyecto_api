@@ -1,8 +1,6 @@
 {% extends "gestion_usuarios/base.html" %}
 
-
 {% block content %}
-
 <html>
     <body>
         {% if messages %}
@@ -12,8 +10,10 @@
         {% endfor %}
     </ul>
         {% endif %}
-        <form action="/iniciar_sesion" method="POST"> {% csrf_token %}
+        <form action="/inicio_admin" method="POST"> {% csrf_token %}
             <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 459px;text-align: left">
+          
+            <p> <u> Inicio de sesión: Administrador. </u></p>
             <p>
                 Email: <input type="text" name="email"> 
             </p>
@@ -22,10 +22,6 @@
                 Contraseña: <input type="password" name="contraseña"> 
             </p>
 
-            <p>
-                Codigo: <input type="text" name="codigo"> 
-            </p>
-    
             <p style="text-align:center">       
                 <input type="submit" value="Iniciar sesión">
             </p>
@@ -35,23 +31,9 @@
                     Volver a inicio
                 </a>
             </p> 
+    
 
-            <p style="text-align:center">       
-                <a href="{% url 'inicio_vacunador' %}">
-                    Iniciar sesión como personal
-                </a>
-            </p>
-
-            <p style="text-align:center">       
-                <a href="{% url 'inicio_admin' %}">
-                    Iniciar sesión como administrador
-                </a>
-            </p>
         </form>
     </body>
 </html>
-
-
-
 {% endblock %}
-

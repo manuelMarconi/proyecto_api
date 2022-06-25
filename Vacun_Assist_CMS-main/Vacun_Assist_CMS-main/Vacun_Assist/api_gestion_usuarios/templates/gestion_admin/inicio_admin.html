@@ -1,0 +1,73 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    
+    <body >
+        
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            <span style="background-color: rgb(253, 246, 44)"> 
+                {{ message }}
+            </span>
+        </span>
+        </li>
+        {% endfor %}
+    </ul>
+        {% endif %}
+    
+        {% if user.is_authenticated %}
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+            <p> </p>
+            <li>                
+                <a href="{% url 'mod_nombre' %}"> Modificar nombre de vacunatorio </a>
+            </li>
+            <p> </p>
+            <b> <u> Informes: </u></b>
+            <p></p>
+            <li>                
+                <a href="{% url 'informe_cant_persona' %}"> Personas que se vacunaron </a>
+            </li>
+            <p> </p>
+            <li>                
+                <a href="{% url 'info_personas' %}"> Personas que se registraron </a>
+            </li>
+            <p> </p>
+            <li>                
+                <a href="{% url 'informe_covid' %}"> Personas que solicitaron la vacuna del coronavirus  </a>
+            </li>
+            <p> </p>
+            <li>                
+                <a href="{% url 'informe_fiebre' %}"> Personas que solicitaron la vacuna de la fiebre amarilla </a> 
+            </li>
+            <p></p>
+
+            <b> <u> Manejo de turnos: </u></b>
+            <p></p>
+            <li>                
+                <a href="{% url 'asignar_turno_covid' %}"> Asignar turno para la vacuna del coronavirus </a> 
+            </li>
+            <p></p>
+            <li>                
+                <a href="{% url 'asignar_turno_fiebre' %}"> Asignar turno para la vacuna de la fiebre amarilla </a> 
+            </li>
+            <p></p>
+
+            <b> <u> Manejo de usuarios: </u></b>
+            <p></p>
+            <li>                
+                <a href="{% url 'historial_admin' %}"> Ver historial de vacunación de usuario </a> 
+            </li>
+            <p></p>
+
+            <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
+        </span>
+   
+        {% endif %}
+
+    </body>
+</html>
+{% endblock %}
+

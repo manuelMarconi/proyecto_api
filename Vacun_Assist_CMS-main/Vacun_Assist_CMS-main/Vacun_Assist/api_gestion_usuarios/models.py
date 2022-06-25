@@ -65,6 +65,8 @@ class HistorialCovid(models.Model):
     cantidad_dosis=models.CharField(max_length=10)
     fecha_primeradosis=models.DateField(blank=True, null=True)
     fecha_segundadosis=models.DateField(blank=True, null=True)
+    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
+    vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
 
     def __str__(self):
         return 'DNI: %s. Cantidad de dosis: %s. Primera dosis: %s. Segunda dosis: %s' % (self.usuario, self.cantidad_dosis, self.fecha_primeradosis, self.fecha_segundadosis)
@@ -74,6 +76,8 @@ class HistorialFiebreA(models.Model):
     fecha_aplicacion_fiebre_a=models.DateField(blank=True, null=True)
     usuario=models.CharField(max_length=8)
     si_o_no=models.CharField(max_length=2, null=True)
+    vacuna_externa_fiebre=models.BooleanField(null=True)
+    
     
     def __str__(self):
         return 'DNI: %s. Fecha: %s' % (self.usuario, self.fecha_aplicacion_fiebre_a)
@@ -81,6 +85,7 @@ class HistorialFiebreA(models.Model):
 
 class HistorialGripe(models.Model):
     fecha_aplicacion_gripe=models.DateField(blank=True, null=True)
+    vacuna_externa_gripe=models.BooleanField(null=True)
     usuario=models.CharField(max_length=8)
 
     def __str__(self):
@@ -97,5 +102,12 @@ class HistorialVacunacion(models.Model):
     fecha_segundadosis_covid=models.DateField(blank=True, null=True)
     fecha_aplicacion_fiebre_a=models.DateField(blank=True, null=True)
     fecha_aplicacion_gripe=models.DateField(blank=True, null=True)
+
+
+class Administrador(models.Model):
+    nombre=models.CharField(max_length=30)
+    apellido=models.CharField(max_length=30)
+    email=models.EmailField()
+    contraseña=models.CharField(max_length=60)
 
 
