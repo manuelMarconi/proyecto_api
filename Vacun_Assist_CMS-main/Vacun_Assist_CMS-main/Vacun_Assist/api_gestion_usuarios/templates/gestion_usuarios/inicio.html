@@ -39,15 +39,26 @@
             <p style="text-align:center">
                 <u><b>Sacar turno</b></u> 
             </p>
+
+            <li  style="display:none;">  
+                <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
+             </li>
             <li>  
                <a href="{% url 'covid' %}"> Sacar turno para vacuna del coronavirus </a> 
             </li>
             <li>
                 <a href="{% url 'fiebre_a' %}"> Cargar información sobre historial de vacunación de fiebre amarilla</a>
             </li>
+
+            <li  style="display:none;"> 
+                <a href="{% url 'turno_fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
+            </li >   
+           
             <li>
                 <a href="{% url 'turno_fiebre_a' %}"> Sacar turno para vacuna de la fiebre amarilla</a>
             </li>   
+          
+            
             <li>                
                 <a href="{% url 'gripe' %}"> Sacar turno para la vacuna de la gripe</a>
             </li>

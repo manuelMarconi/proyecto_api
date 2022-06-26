@@ -1,3 +1,4 @@
+from timeit import default_timer
 from django.db import models
 
 
@@ -63,10 +64,10 @@ class Vacunador(models.Model):
 class HistorialCovid(models.Model):
     usuario=models.CharField(max_length=8)
     cantidad_dosis=models.CharField(max_length=10)
-    fecha_primeradosis=models.DateField(blank=True, null=True)
-    fecha_segundadosis=models.DateField(blank=True, null=True)
-    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
-    vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
+#    fecha_primeradosis=models.DateField(blank=True, null=True)
+#    fecha_segundadosis=models.DateField(blank=True, null=True)
+#    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
+#    vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
 
     def __str__(self):
         return 'DNI: %s. Cantidad de dosis: %s. Primera dosis: %s. Segunda dosis: %s' % (self.usuario, self.cantidad_dosis, self.fecha_primeradosis, self.fecha_segundadosis)

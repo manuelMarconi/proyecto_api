@@ -1,0 +1,57 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<html>
+    <body>
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+            <p style="text-align:center">
+                 <u><b> Agregar Vacuna</b></u> 
+                </p>
+    
+                <form action="/agregar_vacuna" method="POST"> {% csrf_token %}
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            <span style="background-color: rgb(251, 133, 3)"> 
+                                {{ message }}
+                                </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+
+
+                <p> Vacuna: 
+                    <select name="vacuna">
+                        <option value="Coronavirus">Coronavirus</option>
+                        <option value="Fiebre Amarilla">Fiebre amarilla</option>
+                        <option value="Gripe">Gripe</option>
+                      </select>
+                    </p>
+
+                <p> Número de dosis que se aplica: (Si corresponde)
+                    <select name="nro_dosis">
+                        <option value="1">1 dosis</option>
+                        <option value="2">2 dosis</option>
+                      </select>
+                    </p>
+
+                <p>  Observaciones: <p> <textarea name="observaciones" rows="10" cols="40"></textarea> </textarea>>  </p> </p>
+
+                <p style="text-align:center">       
+                    <input type="submit" value="Guardar Informacion">
+                </p>
+    
+                <p style="text-align:center">       
+                    <a href="{% url 'inicio_vac' %}">
+                        Volver a inicio
+                    </a>
+                </p> 
+            </form>
+        
+        </span>
+    </body>
+</html>
+{% endblock %}

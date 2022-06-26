@@ -42,8 +42,8 @@ class FormularioCovid(forms.Form):
     #Cantidad de dosis aplicadas    
     cantidad_dosis=forms.IntegerField(max_value=2,min_value=0)
     si_o_no=forms.CharField(max_length=10)
-    fecha_covid_1=forms.DateField()
-    fecha_covid_2=forms.DateField()
+#   fecha_primeradosis=forms.DateField(initial=forms.DateField.bound_data)
+#    fecha_segundadosis=forms.DateField(initial=forms.DateField.bound_data)
 
 class FormularioFiebreA(forms.Form):
     #En que año se aplico
@@ -67,10 +67,12 @@ class FormularioRegistroVacunacion(forms.Form):
     dni=forms.CharField(max_length=8)
     fecha_nacimiento=forms.DateField()
     email=forms.EmailField()
+    
+
+class FormularioAgregarVacuna(forms.Form):
     vacuna=forms.CharField(max_length=40)
     nro_dosis=forms.CharField(max_length=10)
     observaciones=forms.Textarea()
-
 
 class FormularioAutenticacionAdmin(forms.Form):
     email=forms.EmailField()
