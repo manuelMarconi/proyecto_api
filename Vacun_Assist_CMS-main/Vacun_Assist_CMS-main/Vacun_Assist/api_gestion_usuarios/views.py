@@ -855,7 +855,7 @@ def agregar_persona(request):
             #Validar si el mail no esta en la base de datos
             us=list(Usuario.objects.filter(email=infForm['email']))
             
-            if len(us) > 0: #Si el mail ya esta registrado, DEBE VER SI LE CORRESPONDE O NO LA VACUNA QUE SE QUIERE DAR 
+            if len(us) > 0: #Si el mail ya esta registrado, mostrar historial y despues agregar vacuna
 
                 messages.add_message(request, messages.INFO, 'Usuario ya registrado')
                 return render(request, "gestion_vacunador/ver_historial_vac.html")
@@ -960,8 +960,6 @@ def agregar_vacuna(request):
 ############
 ###DEMO 3###
 ############
-
-
 
 
 def inicio_administrador(request):

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import agregar_persona, iniciar_sesion_vacunador, inicio, observar_turnos_dia, registro, cerrar_sesion, iniciar_sesion, cargar_info_covid, cargar_info_fiebre_a, cargar_info_gripe, modificar_perfil, estatus_turno, sacar_turno_fiebre_amarilla, ver_historial, iniciar_sesion_vacunador, ver_historial, sacar_turno_fiebre_amarilla, observar_turnos_dia, agregar_persona, mi_perfil, inicio_vacunador, mi_perfil_vacunador, listado_turnos, mostrar_turno, inicio_admin, informe_cantidad_persona, informe_covid, informe_fiebre_a, informe_personas_registradas, ver_historial_admin, modificar_nombre_vacunatorio, asignar_turno_covid, asignar_turno_fiebre_a, inicio_administrador, agregar_vacuna
+from .views import agregar_persona, iniciar_sesion_vacunador, inicio, observar_turnos_dia, registro, cerrar_sesion, iniciar_sesion, cargar_info_covid, cargar_info_fiebre_a, cargar_info_gripe, modificar_perfil, estatus_turno, sacar_turno_fiebre_amarilla, ver_historial, iniciar_sesion_vacunador, ver_historial, sacar_turno_fiebre_amarilla, observar_turnos_dia, agregar_persona, mi_perfil, inicio_vacunador, mi_perfil_vacunador, listado_turnos, mostrar_turno, inicio_admin, informe_cantidad_persona, informe_covid, informe_fiebre_a, informe_personas_registradas, ver_historial_admin, modificar_nombre_vacunatorio, asignar_turno_covid, asignar_turno_fiebre_a, inicio_administrador, agregar_vacuna, ver_historial_vac
 
 urlpatterns = [
     ###
@@ -22,6 +22,7 @@ urlpatterns = [
     ###
     path('inicio_vacunador', iniciar_sesion_vacunador, name='inicio_vacunador'),
     path('historial',ver_historial , name='historial'),
+    path('ver_historial_vac',ver_historial_vac , name='ver_historial_vac'),
     path('turno_fiebre_a', sacar_turno_fiebre_amarilla, name='turno_fiebre_a'),
     path('turnos_dia', observar_turnos_dia, name='turnos_dia'),
     path('mostrar_turno', mostrar_turno, name='mostrar_turno'),
