@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador
 from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador
 import random
 from django.core.mail import send_mail
@@ -248,8 +248,7 @@ def cargar_info_covid(request):
                     messages.add_message(request, messages.ERROR, 'Sin modificacion') 
                     return redirect('inicio')
             historial=list(HistorialCovid.objects.filter(usuario=dni))
-                        
-                # actualizo y guardo fecha correspondiente
+             
             if (his == 0 and infForm['cantidad_dosis']==1):
                 historial[int(0)].cantidad_dosis = '1'
                 historial = historial[int(0)]
@@ -263,13 +262,12 @@ def cargar_info_covid(request):
                 historial.save()   
                 messages.add_message(request, messages.INFO, 'Actualizacion correcta')
                 return redirect('inicio') 
-                
-                    #Busco la edad del usuario
+                    
             else:        
                 fecha_nac=us[int(0)].fecha_nacimiento
                 direc=us[int(0)].direccion
         
-                usuario_edad=calcularEdad(fecha_nac)
+                usuario_edad=calcularEdad(fecha_nac) #Busco la edad del usuario
                 cantidad_dosis= int(infForm['cantidad_dosis'])
                 paciente_riesgo= infForm['si_o_no']
                     
@@ -277,7 +275,7 @@ def cargar_info_covid(request):
                     messages.add_message(request, messages.ERROR, 'No se puede vacunar. Es menor de edad!') 
                     return redirect('inicio')
 
-                    #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
+                #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
 
                 historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis)
                 historial.save()
@@ -335,8 +333,7 @@ def cargar_info_covid(request):
 def cargar_info_fiebre_a(request):
     if request.method=="POST":
         his=tiene_historial_fiebre_a(request)
-        #1 y 2 indican que subio informacion, sin importar que subio
-        if his == 1: # 1 si subio historial. No puede modificar informacion
+        if his == 1: # 1 si subio historial y puso que si: no puede modificar informacion
             messages.add_message(request, messages.ERROR, 'Error en modificacion') 
             return redirect('inicio')
         
@@ -877,7 +874,7 @@ def agregar_persona(request):
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],contra)
                 user.save()
-                login(request, user)
+            #    login(request, user)
                 #Envio de email
                 
 
@@ -885,7 +882,7 @@ def agregar_persona(request):
                 send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro exitoso en VacunAssist')
                 dni=infForm['dni']
-                return render (request, "gestion_vacunador/agregar_vacuna.html",{"dni":dni} )
+                return render (request, "gestion_vacunador/agregar_vacuna.html")
 
             else:
                 messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
@@ -911,11 +908,12 @@ def agregar_vacuna(request):
             
             hora_turno= time(hour= ahora.hour, minute= ahora.minute)
             #Busco el vacunatorio actual y lo inicializo con ese
-            vac=list(Vacunador.objects.filter(email=request.user.email))
+        #    vac=list(Vacunador.objects.filter(email=request.user.get_username()))
+            vac=list(Vacunador.objects.filter(email=request.user.email ))
             vacunatorio=vac[int(0)].vacunatorio
     
-            us=list(Usuario.objects.filter(email=request.user.email))
-            dni=us[int(0)].dni  # NO RECONOCE EL USUARIO, LISTA VACIA, no se porque si el usuario existe en la base de datos - carla 
+            us=list(Usuario.objects.filter(dni=infForm['dni']))
+            dni=us[int(0)].dni  
 
             turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo')
             turno.save()
@@ -926,12 +924,12 @@ def agregar_vacuna(request):
                 #Vacuna del coronavirus
                 #Depende de las dosis ingresadas, se guarda la fecha de HOY como primera o segunda dosis
                 if infForm['nro_dosis'] == 1:
-                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_primeradosis=fecha_turno)
+                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'])
                     historial_covid.save()
                     #Se le da el turno de la segunda dosis de aca a "X" meses
                     
                     dia_actual=datetime.now()
-                    fecha_turno_2= dia_actual + timedelta(days=90)
+                    fecha_turno_2= dia_actual + timedelta(days=90) # 3 meses
                     hora=random.randint(8,15)
                     hora_turno_2= time(hour=hora, minute=45)
                     
@@ -939,7 +937,7 @@ def agregar_vacuna(request):
                     turno.save()
                         
                 else:
-                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], fecha_segundadosis=fecha_turno)
+                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'])
                     historial_covid.save()
             else:
                 if infForm['vacuna']  == "Gripe": #Vacuna de la gripe
@@ -1033,7 +1031,18 @@ def modificar_nombre_vacunatorio(request):
     #Modifica el nombre del vacunatorio
     #Esto ?? 
     #Idea: armar modelo "Vacunatorio" con nombre y direccion 
-    return render(request, "gestion_admin/modificar_nombre.html")
+
+    if request.method=="POST":
+        miFormulario=FormularioNombreVacunador(request.POST)  
+
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+        
+            messages.add_message(request, messages.INFO, 'Actualizacion correcta de nombre')    
+            return render(request, "gestion_admin/modificar_nombre.html")
+        else:
+            messages.add_message(request, messages.INFO, 'Formulario invalido') 
+    return render(request, "gestion_admin/modificar_nombre.html",{'form':miFormulario})
 
 
 def asignar_turno_covid(request):

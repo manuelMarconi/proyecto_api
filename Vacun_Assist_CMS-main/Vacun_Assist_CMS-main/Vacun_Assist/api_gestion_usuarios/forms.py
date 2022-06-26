@@ -6,6 +6,16 @@ centros_vacunacion = (
     ("Zona cementerio", "138 e/ 73 y 74 nro 2035"),
     ("Zona terminal de omnibus", "3 e/ 41 y 42 nro 480"),
 )
+nombre_vacunacion = (
+    ("Zona municipalidad", "municipalidad_00"),
+    ("Zona cementerio", "cementerio_00"),
+    ("Zona terminal de omnibus", "terminal_00"),
+)
+diccNombre ={
+    "Zona municipalidad": "municipalidad_00",
+    "Zona cementerio": "cementerio_00",
+    "Zona terminal de omnibus": "terminal_00",
+}
 
 class FormularioRegistro(forms.Form):
 
@@ -73,7 +83,13 @@ class FormularioAgregarVacuna(forms.Form):
     vacuna=forms.CharField(max_length=40)
     nro_dosis=forms.CharField(max_length=10)
     observaciones=forms.Textarea()
-
+    dni=forms.CharField(max_length=8)
+    
 class FormularioAutenticacionAdmin(forms.Form):
     email=forms.EmailField()
     contraseña=forms.CharField(max_length=30)
+
+class FormularioNombreVacunador(forms.Form):
+    direccion=forms.ChoiceField(choices = nombre_vacunacion, widget=forms.widgets.Select())
+#    nombre_actual=forms.CharField(max_length=30) 
+#    nuevo_nombre=forms.CharField(max_length=30)

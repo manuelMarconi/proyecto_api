@@ -9,6 +9,11 @@ centros_vacunacion = (
     ("Zona cementerio", "138 e/ 73 y 74 nro 2035"),
     ("Zona terminal de omnibus", "3 e/ 41 y 42 nro 480"),
 )
+nombre_vacunacion = (
+    ("Zona municipalidad", "municipalidad_00"),
+    ("Zona cementerio", "cementerio_00"),
+    ("Zona terminal de omnibus", "terminal_00"),
+)
 
 estados_turno = (
     ("Pendiente", "Pendiente"),
@@ -60,10 +65,14 @@ class Vacunador(models.Model):
     def __str__(self):
         return 'Vacunador: %s, %s. Vacunatorio: %s. Email: %s' % (self.apellido, self.nombre, self.vacunatorio, self.email)
 
+class NombreVacunador(models.Model):
+    nombre=models.CharField(max_length=30)
+    nuevo_nombre=models.CharField(max_length=30)
 
 class HistorialCovid(models.Model):
     usuario=models.CharField(max_length=8)
     cantidad_dosis=models.CharField(max_length=10)
+    vacuna_externa_covid=models.BooleanField(null=True)
 #    fecha_primeradosis=models.DateField(blank=True, null=True)
 #    fecha_segundadosis=models.DateField(blank=True, null=True)
 #    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)

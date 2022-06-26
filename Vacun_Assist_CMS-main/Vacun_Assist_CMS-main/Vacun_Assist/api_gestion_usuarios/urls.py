@@ -21,6 +21,7 @@ urlpatterns = [
     #DEMO 2
     ###
     path('inicio_vacunador', iniciar_sesion_vacunador, name='inicio_vacunador'),
+    path('inicio_vac', inicio_vacunador, name='inicio_vac'),
     path('historial',ver_historial , name='historial'),
     path('ver_historial_vac',ver_historial_vac , name='ver_historial_vac'),
     path('turno_fiebre_a', sacar_turno_fiebre_amarilla, name='turno_fiebre_a'),
@@ -31,7 +32,7 @@ urlpatterns = [
     path('agregar_persona',agregar_persona, name='agregar_persona'),
     path('agregar_vacuna',agregar_vacuna, name='agregar_vacuna'),
     path('mi_perfil', mi_perfil, name='mi_perfil'),
-    path('inicio_vac', inicio_vacunador, name='inicio_vac'),
+
     path('mi_perfil_vacunador', mi_perfil_vacunador, name='mi_perfil_vacunador'),
     ###
     #DEMO 3
