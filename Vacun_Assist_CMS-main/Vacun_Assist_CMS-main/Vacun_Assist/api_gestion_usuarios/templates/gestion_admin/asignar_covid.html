@@ -2,18 +2,55 @@
 
 {% block content %}
 <html>
-    
     <body>
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-        Asignar turno de covid a usuario
-        Listado de usuarios y "Asignar turno"
-        + la opcion de ver historial del usuario 
-        <p style="text-align:center">       
-            <a href="{% url 'inicio_admin' %}">
-                Volver a inicio
-            </a>
-        </p>
-        </span>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+            {% endif %}
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+        <u><b> Turnos de Coronavirus </b></u> 
+    </p>
+    {% if turnos%}
+        {% for turno in turnos %}
+        <ul> 
+            <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+            <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+
+            <form action="/asignar_turno_covid" method="POST"> {% csrf_token %}
+                <li> <b>Estado</b>:
+                    <select name="estado">
+                        <option value="asignar">Asignar</option>
+                        <option value="rechazar">Rechazar</option>
+                    </select>
+                </li>
+
+                <p>
+                    Elegir fecha aplicacion:<input type="date" name="fecha_apliacion"> 
+                </p>
+
+                <p style="text-align:center">       
+                    <input type="submit" value="Cambiar estado">
+                </p>
+            </form>
+        </ul>
+        {% endfor %}
+    {% else %}
+        No hay turnos Pendiente de Coronavirus
+    {% endif %}
+
+
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_admin' %}">
+            Volver a inicio
+        </a>
+    </p> 
+
+    </span>
     </body>
+
+ 
 </html>
 {% endblock %}

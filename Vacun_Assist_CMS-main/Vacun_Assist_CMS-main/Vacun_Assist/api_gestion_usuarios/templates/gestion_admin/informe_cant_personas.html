@@ -1,18 +1,40 @@
 {% extends "gestion_usuarios/base.html" %}
 
+
 {% block content %}
 <html>
     
     <body >
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-       Generar informe de cantidad de personas 
-        
-       <p style="text-align:center">       
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+            {% endif %}
+
+    
+<form action="/info_personas" method="POST"> {% csrf_token %}
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+
+    <p> Vacunatorio:
+    <select name="direccion">
+        <option value="Zona municipalidad">Zona municipalidad</option>
+        <option value="Zona cementerio">Zona cementerio</option>
+        <option value="Zona terminal de omnibus">Zona terminal de omnibus</option>
+      </select>
+    </p>
+
+    <p style="text-align:center">       
+        <input type="submit" value="Mostrar Personas">
+    </p>
+
+    <p style="text-align:center">       
         <a href="{% url 'inicio_admin' %}">
             Volver a inicio
         </a>
-    </p>
-    </span>
+    </p> 
+</form>
 
     </body>
 </html>

@@ -29,6 +29,12 @@ class FormularioRegistro(forms.Form):
     contraseña1=forms.CharField(max_length=30)
     contraseña2=forms.CharField(max_length=30)
 
+class FormularioBuscarUsuario(forms.Form):
+    dni=forms.CharField(max_length=8)
+
+class FormularioBuscarVacunador(forms.Form):
+    direccion=forms.ChoiceField(choices = centros_vacunacion, widget=forms.widgets.Select())
+
 class FormularioModificar(forms.Form):
 
     nombre=forms.CharField(max_length=30)
@@ -69,7 +75,11 @@ class FormularioGripe(forms.Form):
 class FormularioEstadoTurno(forms.Form):
     estado=forms.CharField(max_length=30)
     observaciones=forms.Textarea()
-     
+
+class FormularioEstadoTurnoAdmin(forms.Form):
+    estado=forms.CharField(max_length=30)
+    observaciones=forms.Textarea() 
+    fecha_aplicacion=forms.DateField()
 
 class FormularioRegistroVacunacion(forms.Form):
     nombre=forms.CharField(max_length=30)

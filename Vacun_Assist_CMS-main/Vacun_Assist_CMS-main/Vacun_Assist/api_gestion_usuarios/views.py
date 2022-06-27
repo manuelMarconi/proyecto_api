@@ -10,8 +10,8 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador
-from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador
+from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador, NombreVacunador
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -157,7 +157,7 @@ def tieneTurno(request, vacuna_pedido):
     #Puede tener hasta tres turnos, o no tener ninguno
     #Si tiene turnos, recorro la lista y busco el turno de "vacuna_pedido", puede ser coronavirus, gripe o fiebre amarilla
     dni=us[int(0)].dni
-    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni))
+    turnos=list(Turno.objects.filter(usuario_a_vacunar=dni,estado="Asignado"))
     for turno in turnos:
         if turno.vacuna == vacuna_pedido:
             return True
@@ -174,7 +174,7 @@ def tiene_historial_covid(request):
     #Busco en la lista HistorialCovid, el historial que corresponde al usuario
     historial=list(HistorialCovid.objects.filter(usuario=dni))
 
-    tiene_historial_covid= 0
+    tiene_historial_covid= -1
     if len(historial) != 0:
         cant = historial[int(0)].cantidad_dosis
         if cant == '1':
@@ -235,7 +235,7 @@ def cargar_info_covid(request):
             dni=us[int(0)].dni
             #Chequeo historial 
             his=tiene_historial_covid(request)
-            tur=tieneTurno(request,'Coronavirus')            
+            tur=tieneTurno(request,'Coronavirus') # estado="Asignado"           
             if tur == True:
                 messages.add_message(request, messages.ERROR, 'Usted ya tiene un turno pendiente para la vacuna de Coronavirus') 
                 return redirect('inicio')
@@ -743,8 +743,6 @@ def observar_turnos_dia(request):
     #Busco los turnos del vacunatorio y de la fecha actual, de estado= 'Asignado'
     turnos=list(Turno.objects.filter(fecha=dia_actual, vacunatorio=vacunatorio_actual, estado='Asignado'))
     
-    #ESTO ESTA MAL
-
     cant=len(turnos)
     cont=0
     while cont != cant:
@@ -994,36 +992,69 @@ def inicio_administrador(request):
 
     return render(request, "autenticacion/login_admin.html", {"form": miFormulario})
 
-    return render(request, "gestion_admin/informe_registro.html")
-
 def informe_cantidad_persona(request):
     #Listado:
     #Se vacunaron "x" cantidad de personas:
     #Mostrar si o si: DNI y vacunatorio
     #Podemos mostrar para que quede mejor: Nombre y apellido, fecha de nacimiento
     #Tambien se puede filtrar por "vacunas externas", las que no se dieron en Vacun Assist y las sube el usuario
-    return render(request, "gestion_admin/informe_cant_personas.html")
+    
+    
+    return render(request, "gestion_admin/informe_registro.html")
 
-def informe_covid(request):
+def informe_covid(request): # HECHO
     #Listado:
     #Personas que pidieron la vacuna de covid
-    return render(request, "gestion_admin/informe_covid.html")
 
-def informe_fiebre_a(request):
+    turnos=list(Turno.objects.filter(vacuna='Coronavirus'))
+    return render(request, "gestion_admin/informe_covid.html",{"turnos":turnos} )
+
+def informe_fiebre_a(request): # HECHO -
     #Listado:
     #Personas que pidieron la vacuna de la fiebre amarilla
-    return render(request, "gestion_admin/informe_fiebre_a.html")
 
-def informe_personas_registradas(request):
+    turnos=list(Turno.objects.filter(vacuna='Fiebre Amarilla'))
+    return render(request, "gestion_admin/informe_fiebre_a.html",{"turnos":turnos})
+
+def informe_personas_registradas(request):  # HECHO - ANDA BIEN
     #Listado:
     #Personas que se registraron
     #Filtrar por DNI, vacunatorio.
-    return render(request, "gestion_admin/informe_registro.html")
+     
+    if request.method=="POST":
+        miFormulario=FormularioBuscarVacunador(request.POST)  
+
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios        
+            vac= infForm["direccion"]
+            personas=list(Usuario.objects.filter(direccion=vac))
+            return render(request, "gestion_admin/personas_reg.html",{"personas":personas} )
+        else:
+            messages.add_message(request, messages.INFO, 'Formulario invalido') 
+
+    return render(request, "gestion_admin/informe_cant_personas.html")
 
 
-def ver_historial_admin(request):
+def ver_historial_admin(request):  # HECHO
     #El admin ve el historial de vacunacion de un usuario
     #Se busca por DNI, busca los 3 historiales (o los que tenga) y muestra
+
+    if request.method=="POST":
+        miFormulario=FormularioBuscarUsuario(request.POST)  
+
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios        
+            dni= infForm["dni"]
+     
+            #Busco los 3 historiales
+            his_covid=list(HistorialCovid.objects.filter(usuario=dni))
+            his_fiebre_a=list(HistorialFiebreA.objects.filter(usuario=dni))
+            his_gripe=list(HistorialGripe.objects.filter(usuario=dni))
+
+            return render(request, "gestion_admin/historial_usu.html", {"historial_covid": his_covid, "historial_fiebre_a": his_fiebre_a, "historial_gripe": his_gripe})
+        else:
+            messages.add_message(request, messages.INFO, 'Formulario invalido') 
+
     return render(request, "gestion_admin/historial_admin.html")
 
 
@@ -1037,25 +1068,105 @@ def modificar_nombre_vacunatorio(request):
 
         if miFormulario.is_valid():
             infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
-        
+   #         nombre = infForm["direccion"]
+   #         nombreVac=list(NombreVacunador.objects.filter(vacunatorio=nombre))
+   #         nombreVac[int(0)].nuevo_nombre = infForm["nuevo_nombre"]
+   #         nombreVac.save()
             messages.add_message(request, messages.INFO, 'Actualizacion correcta de nombre')    
             return render(request, "gestion_admin/modificar_nombre.html")
         else:
             messages.add_message(request, messages.INFO, 'Formulario invalido') 
-    return render(request, "gestion_admin/modificar_nombre.html",{'form':miFormulario})
+    return render(request, "gestion_admin/modificar_nombre.html")
 
 
 def asignar_turno_covid(request):
     #Listado de gente que pidio vacuna covid 
     # + opcion de asignar turno (cambiar el estado del turno existente y asignarle una fecha)
     # + ver historial de la persona para "aceptar" y "rechazar" el pedido del turno
-    return render(request, "gestion_admin/asignar_covid.html")
+    turnos=list(Turno.objects.filter(estado='Pendiente'))
+    cant=len(turnos)
+    cont=0
+    while cont != cant:
+        turnos=list(Turno.objects.filter(estado='Pendiente')) # ,vacuna='Coronavirus'
+        turno=turnos[int(cont)]
+        cont=cont+1
+        if request.method=="POST":   # NO ENTRA ACA
+            miFormulario=FormularioEstadoTurnoAdmin(request.POST)
+            mostrar_turno(request,turno, miFormulario)
+            if miFormulario.is_valid():
+                infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+                
+                if infForm['estado'] == 'asignar':
+                    #Turno completo
+                    #Cambio el estado del turno
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    fecha_turno = infForm["fecha_aplicacion"] 
+                    hora=random.randint(8,16)
+                    tur.fecha=fecha_turno
+                    tur.hora=hora
+                    tur.estado='Asignado'
+                    tur.save()
+                   
+                else:
+                    #Turno rechazado
+                    #Actualizo el estado del turno.
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    tur.estado='Incompleto'
+                    tur.save()
+                    
+                return render(request, "gestion_admin/asignar_covid.html") 
+        else:
+            messages.add_message(request, messages.INFO, 'ENTRA ACA')
+            miFormulario=FormularioEstadoTurnoAdmin()    
+    else:
+        messages.add_message(request, messages.ERROR, 'Sin turnos!!')
+    return render(request, "gestion_admin/asignar_covid.html", {"form": miFormulario})
 
 
 def asignar_turno_fiebre_a(request):
     #Listado de gente que pidio vacuna de la fiebre amarilla 
     # + opcion de asignar turno (cambiar el estado del turno existente y asignarle una fecha)
     # + ver historial de la persona para "aceptar" y "rechazar" el pedido del turno
+
+    turnos=list(Turno.objects.filter(estado='Pendiente', vacuna="Fiebre Amarilla"))
+    
+    cant=len(turnos)
+    cont=0
+    while cont != cant:
+        turnos=list(Turno.objects.filter(estado='Pendiente',vacuna="Fiebre Amarilla"))
+        turno=turnos[int(cont)]
+        cont=cont+1
+        if request.method=="POST":
+            miFormulario=FormularioEstadoTurnoAdmin(request.POST)
+            mostrar_turno(request,turno, miFormulario)
+            if miFormulario.is_valid():
+                infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios
+                
+                if infForm['estado'] == 'asignar':
+                    #Turno completo
+                    #Cambio el estado del turno
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    tur.estado='Asignado'
+                    tur.save()
+                  
+                    return render(request,"gestion_admin/asignar_fiebre.html") 
+                else:
+                    #Turno incompleto
+                    #Actualizo el estado del turno.
+                    tur=list(Turno.objects.filter(id=turno.id))
+                    tur=tur[0]
+                    tur.estado='Asignado'
+                    tur.save()
+                    
+                    return render(request, "gestion_admin/asignar_fiebre.html") #llamaba a turnos_del_dia
+
+        else:
+            miFormulario=FormularioEstadoTurnoAdmin()    
+        return render(request,"gestion_admin/asignar_fiebre.html", {"turnos": turnos}) #llamaba a turnos_del_dia
+    
     return render(request, "gestion_admin/asignar_fiebre.html")
 
 

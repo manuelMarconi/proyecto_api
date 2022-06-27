@@ -6,18 +6,18 @@
     <body >
         <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
             <p style="text-align:center">
-                <u><b> Informe de las personas que solicitaron la vacuna de la Fiebre Amarilla</u> </b></u> 
+                <u><b> Personas registradas en ese Vacunatorio</b></u> 
             </p>
-            {% if turnos%}
-                {% for turno in turnos %}
+            {% if personas %}
+                {% for per in personas %}
                 <ul> 
-                    <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
-                    <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+                    <li> <b> Nombre: </b> {{per.nombre}}  </li>
+                    <li> <b> DNI: </b> {{per.dni}}</li>
             
                 </ul>
                 {% endfor %}
             {% else %}
-                Nadie solicito la vacuna de la Fiebre Amarilla
+                No hay personas registradas
             {% endif %}
         
         

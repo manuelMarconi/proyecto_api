@@ -45,7 +45,7 @@ urlpatterns = [
     path('info_personas', informe_personas_registradas,name='info_personas'),
     path('historial_admin', ver_historial_admin ,name='historial_admin'),
     path('mod_nombre', modificar_nombre_vacunatorio,name='mod_nombre'),
-    path('asignar_turno_covid', asignar_turno_fiebre_a ,name='asignar_turno_covid'),
-    path('asignar_turno_fiebre', asignar_turno_covid ,name='asignar_turno_fiebre'),
+    path('asignar_turno_covid', asignar_turno_covid ,name='asignar_turno_covid'),
+    path('asignar_turno_fiebre', asignar_turno_fiebre_a ,name='asignar_turno_fiebre'),
 
 ]

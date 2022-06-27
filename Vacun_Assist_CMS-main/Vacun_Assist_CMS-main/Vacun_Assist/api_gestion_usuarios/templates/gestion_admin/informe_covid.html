@@ -1,18 +1,35 @@
 {% extends "gestion_usuarios/base.html" %}
 
+
 {% block content %}
 <html>
+    <body>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <p style="text-align:center">
+        <u><b> Informe de las personas que solicitaron la vacuna de Coronavirus</u> </b></u> 
+    </p>
+    {% if turnos %}
+        {% for turno in turnos %}
+        <ul> 
+            <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
+            <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
     
-    <body >
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-        Informe de personas que solicitaron la vacuna del covid
+        </ul>
+        {% endfor %}
+    {% else %}
+        Nadie solicito la vacuna de Coronavirus
+    {% endif %}
 
-        <p style="text-align:center">       
-            <a href="{% url 'inicio_admin' %}">
-                Volver a inicio
-            </a>
-        </p>
-        </span>
+
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_admin' %}">
+            Volver a inicio
+        </a>
+    </p> 
+
+    </span>
     </body>
+
+ 
 </html>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api_gestion_usuarios.models import Usuario, Turno, Vacunador, Codigos, HistorialGripe, HistorialFiebreA, HistorialCovid, Administrador
+from api_gestion_usuarios.models import Usuario, Turno, Vacunador, Codigos, HistorialGripe, HistorialFiebreA, HistorialCovid, Administrador, NombreVacunador
 
 # Register your models here.
 
@@ -12,5 +12,6 @@ admin.site.register(HistorialCovid)
 admin.site.register(HistorialFiebreA)
 admin.site.register(HistorialGripe)
 admin.site.register(Administrador)
+admin.site.register(NombreVacunador)
 
 

@@ -66,13 +66,13 @@ class Vacunador(models.Model):
         return 'Vacunador: %s, %s. Vacunatorio: %s. Email: %s' % (self.apellido, self.nombre, self.vacunatorio, self.email)
 
 class NombreVacunador(models.Model):
-    nombre=models.CharField(max_length=30)
+    vacunatorio=models.CharField(max_length=30, choices=centros_vacunacion)
     nuevo_nombre=models.CharField(max_length=30)
 
 class HistorialCovid(models.Model):
     usuario=models.CharField(max_length=8)
     cantidad_dosis=models.CharField(max_length=10)
-    vacuna_externa_covid=models.BooleanField(null=True)
+#    vacuna_externa_covid=models.BooleanField(null=True)
 #    fecha_primeradosis=models.DateField(blank=True, null=True)
 #    fecha_segundadosis=models.DateField(blank=True, null=True)
 #    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
