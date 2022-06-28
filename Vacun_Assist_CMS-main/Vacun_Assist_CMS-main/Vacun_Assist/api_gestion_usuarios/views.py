@@ -30,12 +30,11 @@ from datetime import date, datetime, timedelta, time
 ############ 
 def inicio(request):
     
-    print("turno fiebre amarilla :", tieneTurno(request,"Fiebre amarilla"))
-    print("numero de historial: ", tiene_historial_fiebre_a(request))
-    if(tieneTurno(request,"Fiebre amarilla")):
-        return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
-    return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
-
+    if request.user.is_authenticated:
+        if(tieneTurno(request,"Fiebre amarilla")):
+            return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
+        return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
+    return render(request, "gestion_usuarios/inicio.html")
 def inicio_vacunador(request):
     return render (request, "gestion_vacunador/inicio_vac.html")
 
