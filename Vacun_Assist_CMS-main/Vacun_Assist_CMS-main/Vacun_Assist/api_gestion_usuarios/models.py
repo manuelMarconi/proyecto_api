@@ -27,7 +27,8 @@ class Usuario (models.Model):
     apellido=models.CharField(max_length=30)
     dni=models.CharField(max_length=8)
     fecha_nacimiento=models.DateField()
-    direccion=models.CharField(max_length=30, choices=centros_vacunacion)
+    #direccion=models.CharField(max_length=30, choices=centros_vacunacion)
+    direccion=models.CharField(max_length=30)
     email=models.EmailField()
     contraseña=models.CharField(max_length=60)
     codigo=models.CharField(max_length=4)
@@ -41,7 +42,8 @@ class Turno(models.Model):
     vacuna=models.CharField(max_length=40)
     usuario_a_vacunar=models.CharField(max_length=8)
     #usuario_a_vacunar=models.Usuario() #puede ser un campo de tipo usuario, o un campo de tipo dni 
-    vacunatorio=models.CharField(max_length=40, choices=centros_vacunacion)
+    #vacunatorio=models.CharField(max_length=40, choices=centros_vacunacion)
+    vacunatorio=models.CharField(max_length=40)
     estado=models.CharField(max_length=40, choices=estados_turno)
     observaciones=models.CharField(max_length=100, blank=True, null=True, default='Ninguna observación')
 
@@ -58,7 +60,8 @@ class Codigos(models.Model):
 class Vacunador(models.Model):
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
-    vacunatorio=models.CharField(max_length=30, choices=centros_vacunacion)
+    #vacunatorio=models.CharField(max_length=30, choices=centros_vacunacion)
+    vacunatorio=models.CharField(max_length=30)
     email=models.EmailField()
     contraseña=models.CharField(max_length=60)
 
@@ -119,5 +122,14 @@ class Administrador(models.Model):
     apellido=models.CharField(max_length=30)
     email=models.EmailField()
     contraseña=models.CharField(max_length=60)
+
+
+class Vacunatorio(models.Model):
+    nombre=models.CharField(max_length=60)
+    direccion=models.CharField(max_length=60)
+
+    def __str__(self):
+        return 'Nombre: %s. Direccion: %s' % (self.nombre, self.direccion)
+ 
 
 

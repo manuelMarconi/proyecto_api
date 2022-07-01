@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
 from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador
-from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador, NombreVacunador
+from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador, NombreVacunador, Vacunatorio
 import random
 from django.core.mail import send_mail
 from django.http.response import JsonResponse
@@ -1080,6 +1080,7 @@ def modificar_nombre_vacunatorio(request):
     #Esto ?? 
     #Idea: armar modelo "Vacunatorio" con nombre y direccion 
 
+    vacunatorios_lista=Vacunatorio.objects.filter()
     if request.method=="POST":
         miFormulario=FormularioNombreVacunador(request.POST)  
 
@@ -1089,11 +1090,56 @@ def modificar_nombre_vacunatorio(request):
    #         nombreVac=list(NombreVacunador.objects.filter(vacunatorio=nombre))
    #         nombreVac[int(0)].nuevo_nombre = infForm["nuevo_nombre"]
    #         nombreVac.save()
+
+            #Obtengo la info del formulario
+            nombre_nuevo = infForm['nombre']    
+            vacunatorio_nuevo = infForm['nombre_actual']
+
+            #Busco en tabla "Vacunatorio" el vacunatorio a cambiar
+            #Guardo el nuevo nombre
+            vac=list(Vacunatorio.objects.filter(nombre=vacunatorio_nuevo))
+            vac=vac[int(0)]
+            vac.nombre=nombre_nuevo
+            vac.save()
+
+            #Cambio en la tabla Usuario, el nombre del nuevo vacunatorio
+            usuarios=list(Usuario.objects.filter(direccion=vacunatorio_nuevo))
+
+            cont=0
+            for us in usuarios:
+                us=usuarios[cont]
+                cont=cont+1
+                us.direccion=nombre_nuevo
+                us.save()
+                
+
+            #Cambio en la tabla Turno, en nombre del vacunatorio
+            turnos=list(Turno.objects.filter(vacunatorio=vacunatorio_nuevo))
+
+            cont=0
+            for tur in turnos:
+                tur=turnos[cont]
+                cont=cont+1
+                tur.vacunatorio=nombre_nuevo
+                tur.save()
+
+            #Cambio en la tabla del Vacunadaor, el nombre del vacunatorio
+
+            vacunadores=list(Vacunador.objects.filter(vacunatorio=vacunatorio_nuevo))
+
+            cont=0
+            for vac in vacunadores:
+                vac=vacunadores[cont]
+                cont=cont+1
+                vac.vacunatorio=nombre_nuevo
+                vac.save()
+
+
             messages.add_message(request, messages.INFO, 'Actualizacion correcta de nombre')    
             return render(request, "gestion_admin/modificar_nombre.html")
         else:
             messages.add_message(request, messages.INFO, 'Formulario invalido') 
-    return render(request, "gestion_admin/modificar_nombre.html")
+    return render(request, "gestion_admin/modificar_nombre.html", {"vacunatorios":vacunatorios_lista})
 
 
 def asignar_turno_covid(request):

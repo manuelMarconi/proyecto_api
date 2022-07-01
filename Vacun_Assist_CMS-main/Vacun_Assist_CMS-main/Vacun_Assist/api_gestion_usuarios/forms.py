@@ -101,5 +101,6 @@ class FormularioAutenticacionAdmin(forms.Form):
 
 class FormularioNombreVacunador(forms.Form):
     direccion=forms.ChoiceField(choices = nombre_vacunacion, widget=forms.widgets.Select())
-#    nombre_actual=forms.CharField(max_length=30) 
+    nombre=forms.CharField(max_length=30) 
+    nombre_actual=forms.CharField(max_length=30) 
 #    nuevo_nombre=forms.CharField(max_length=30)

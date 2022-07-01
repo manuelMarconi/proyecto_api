@@ -22,6 +22,11 @@
                 </ul>
         {% endif %}
 
+        <p> <b> Vacunatorios: </b></p>
+        {% for vacun in vacunatorios %}
+            <p> <u>Nombre</u>: {{vacun.nombre}} <u>Direccion</u>: {{vacun.direccion}} </p>
+        {% endfor %}
+
         <p> Vacunatorio:
             <select name="direccion">
                 <option value="Zona municipalidad">Zona municipalidad </option>
@@ -29,10 +34,9 @@
                 <option value="Zona terminal de omnibus">Zona terminal de omnibus</option>
               </select>
             </p>
-
-            <p>
-                Nombre Actual: <input type="text" name="nombre" default="nombre zona"> 
-            </p>
+        <p>
+            Nombre Actual: <input type="text" name="nombre_actual"> 
+        </p>
         <p>
             Nombre Nuevo: <input type="text" name="nombre"> 
         </p>
