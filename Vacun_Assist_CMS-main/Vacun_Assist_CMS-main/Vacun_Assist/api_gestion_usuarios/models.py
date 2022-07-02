@@ -41,7 +41,8 @@ class Turno(models.Model):
     hora=models.TimeField(blank=True, null=True)
     vacuna=models.CharField(max_length=40)
     usuario_a_vacunar=models.CharField(max_length=8)
-    #usuario_a_vacunar=models.Usuario() #puede ser un campo de tipo usuario, o un campo de tipo dni 
+    nombre_usuario=models.CharField(max_length=50)
+    apellido_usuario=models.CharField(max_length=50)
     #vacunatorio=models.CharField(max_length=40, choices=centros_vacunacion)
     vacunatorio=models.CharField(max_length=40)
     estado=models.CharField(max_length=40, choices=estados_turno)
@@ -75,11 +76,13 @@ class NombreVacunador(models.Model):
 class HistorialCovid(models.Model):
     usuario=models.CharField(max_length=8)
     cantidad_dosis=models.CharField(max_length=10)
+    nombre_usuario=models.CharField(max_length=50)
+    apellido_usuario=models.CharField(max_length=50)
 #    vacuna_externa_covid=models.BooleanField(null=True)
 #    fecha_primeradosis=models.DateField(blank=True, null=True)
 #    fecha_segundadosis=models.DateField(blank=True, null=True)
-#    vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
-#    vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
+    #vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
+    #vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
 
     def __str__(self):
         return 'DNI: %s. Cantidad de dosis: %s. Primera dosis: %s. Segunda dosis: %s' % (self.usuario, self.cantidad_dosis, self.fecha_primeradosis, self.fecha_segundadosis)
@@ -90,6 +93,8 @@ class HistorialFiebreA(models.Model):
     usuario=models.CharField(max_length=8)
     si_o_no=models.CharField(max_length=2, null=True)
     vacuna_externa_fiebre=models.BooleanField(null=True)
+    nombre_usuario=models.CharField(max_length=50)
+    apellido_usuario=models.CharField(max_length=50)
     
     
     def __str__(self):
@@ -100,21 +105,11 @@ class HistorialGripe(models.Model):
     fecha_aplicacion_gripe=models.DateField(blank=True, null=True)
     vacuna_externa_gripe=models.BooleanField(null=True)
     usuario=models.CharField(max_length=8)
+    nombre_usuario=models.CharField(max_length=50)
+    apellido_usuario=models.CharField(max_length=50)
 
     def __str__(self):
         return 'DNI: %s. Fecha: %s' % (self.usuario, self.fecha_aplicacion_gripe)
-
-
-#Otra opción: historial unificado
-
-class HistorialVacunacion(models.Model):
-    usuario=models.CharField(max_length=8)
-    vacuna=models.CharField(max_length=20)
-    cantidad_dosis_covid=models.CharField(max_length=10, blank=True, null=True)
-    fecha_primeradosis_covid=models.DateField(blank=True, null=True)
-    fecha_segundadosis_covid=models.DateField(blank=True, null=True)
-    fecha_aplicacion_fiebre_a=models.DateField(blank=True, null=True)
-    fecha_aplicacion_gripe=models.DateField(blank=True, null=True)
 
 
 class Administrador(models.Model):

@@ -268,6 +268,8 @@ def cargar_info_covid(request):
             else:        
                 fecha_nac=us[int(0)].fecha_nacimiento
                 direc=us[int(0)].direccion
+                nombre=us[int(0)].nombre
+                apellido=us[int(0)].apellido
         
                 usuario_edad=calcularEdad(fecha_nac) #Busco la edad del usuario
                 cantidad_dosis= int(infForm['cantidad_dosis'])
@@ -279,7 +281,7 @@ def cargar_info_covid(request):
 
                 #Creo un historial de vacunación, guardo dni del usuario y la cantidad de dosis que ingreso
 
-                historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis)
+                historial=HistorialCovid(usuario=dni, cantidad_dosis=cantidad_dosis, nombre_usuario=nombre, apellido_usuario=apellido)
                 historial.save()
                 if cantidad_dosis == 2:
                     messages.add_message(request, messages.ERROR, 'ERROR No puede recibir mas vacunas de coronavirus porque tiene todas las dosis correspondientes') 
@@ -295,7 +297,7 @@ def cargar_info_covid(request):
                         fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
                         hora=random.randint(8,16)
                         hora_turno=time(hour=hora,minute=30)
-                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado',nombre_usuario=nombre, apellido_usuario=apellido)
                         turno.save()                        
                         messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
                         return redirect('inicio')
@@ -304,7 +306,7 @@ def cargar_info_covid(request):
                                 #Menor de 60, sin riesgo
                                 #El turno lo asigna manualmente el administrador
                                 #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
-                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente')
+                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente', nombre_usuario=nombre, apellido_usuario=apellido)
                         turno.save()
                         messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
                         return redirect('inicio')
@@ -320,7 +322,7 @@ def cargar_info_covid(request):
                     fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
                     hora=random.randint(8,16)
                     hora_turno=time(hour=hora,minute=30)
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')                    
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)                    
                     turno.save()
 
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
@@ -340,6 +342,9 @@ def cargar_info_fiebre_a(request):
             
             us=list(Usuario.objects.filter(email=request.user.email))
             dni=us[int(0)].dni
+            nombre=us[int(0)].nombre
+            apellido=us[int(0)].apellido
+            
             
             if miFormulario.is_valid():
                 infForm=miFormulario.cleaned_data
@@ -367,7 +372,7 @@ def cargar_info_fiebre_a(request):
                     
                     #elimino turno en caso de existir
                     
-                    turno=Turno.objects.filter(vacuna="Fiebre amarilla",usuario_a_vacunar=dni, estado="Pendiente")
+                    turno=Turno.objects.filter(vacuna="Fiebre amarilla",usuario_a_vacunar=dni, estado="Pendiente", nombre_usuario=nombre, apellido_usuario=apellido)
                     turno.delete()
                     #pregunto si tiene historial. en caso de tenerlo solo modifico.
                     historial=list(HistorialFiebreA.objects.filter(usuario=dni))
@@ -381,7 +386,7 @@ def cargar_info_fiebre_a(request):
                     
                         messages.add_message(request, messages.INFO, 'Actualización correcta')
                         return redirect('inicio')    
-                    historial=HistorialFiebreA.objects.create(fecha_aplicacion_fiebre_a=infForm['fecha_aplicacion_fiebre_a'],usuario=dni,si_o_no=infForm['si_o_no'])
+                    historial=HistorialFiebreA.objects.create(fecha_aplicacion_fiebre_a=infForm['fecha_aplicacion_fiebre_a'],usuario=dni,si_o_no=infForm['si_o_no'], nombre_usuario=nombre, apellido_usuario=apellido)
                     historial.save()
                     
                     #retorno
@@ -447,7 +452,10 @@ def sacar_turno_fiebre_amarilla(request):
         fecha_nac=us[int(0)].fecha_nacimiento
         dni=us[int(0)].dni
         direc=us[int(0)].direccion
+        nombre=us[int(0)].nombre
+        apellido=us[int(0)].apellido
         usuario_edad=calcularEdad(fecha_nac)
+
 
         if request.POST.get('si_o_no') == 'si':
             if usuario_edad < 60:
@@ -455,7 +463,7 @@ def sacar_turno_fiebre_amarilla(request):
                 #El turno lo asigna el administrador, se manda un "pedido"
                 #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna de la fiebre amarilla(El listado no es para esta demo)
 
-                turno=Turno(vacuna='Fiebre amarilla', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente')
+                turno=Turno(vacuna='Fiebre amarilla', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente', nombre_usuario=nombre, apellido_usuario=apellido)
                 turno.save()
                 messages.add_message(request, messages.INFO, ' Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno!')
                 return redirect('inicio')
@@ -495,6 +503,8 @@ def cargar_info_gripe(request):
 
         fecha_nac=us[int(0)].fecha_nacimiento
         dni=us[int(0)].dni
+        nombre=us[int(0)].nombre
+        apellido=us[int(0)].apellido
         direc=us[int(0)].direccion
         usuario_edad=calcularEdad(fecha_nac)
 
@@ -507,7 +517,7 @@ def cargar_info_gripe(request):
                     
                 hora=random.randint(9,16)
                 hora_turno= time(hour= hora, minute= 00)
-                turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                turno=Turno(fecha=fecha_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)
                 turno.save()
                 messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
                 return redirect('inicio')
@@ -521,7 +531,7 @@ def cargar_info_gripe(request):
                 hora=random.randint(8,15)
                 hora_turno= time(hour=hora, minute=15)
 
-                turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado',nombre_usuario=nombre, apellido_usuario=apellido)
                 turno.save()
                 messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
                 return redirect('inicio')
@@ -553,7 +563,7 @@ def cargar_info_gripe(request):
                 #Cumple con el tiempo correspondiente
                 hora=random.randint(9,16)
                 hora_turno= time(hour= hora, minute= 00)
-                turno=Turno(fecha=fecha_p_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado')
+                turno=Turno(fecha=fecha_p_turno, hora= hora_turno, vacuna='Gripe', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)
                 turno.save()
                 messages.add_message(request, messages.INFO, 'Su turno ha sido reservado.') 
                 return redirect('inicio')
@@ -562,7 +572,7 @@ def cargar_info_gripe(request):
                 #Agrego vacuna_externa_gripe, variable booleana para saber si se la dio en Vacun Assist o en otro lado
                 #Si es True, se la dio en otro lado
 
-                historial=HistorialGripe(usuario=dni, fecha_aplicacion_gripe= request.POST.get('fecha_aplicacion_gripe'), vacuna_externa_gripe= True)
+                historial=HistorialGripe(usuario=dni, fecha_aplicacion_gripe= request.POST.get('fecha_aplicacion_gripe'), vacuna_externa_gripe= True, nombre_usuario=nombre, apellido_usuario=apellido)
                 historial.save()
                 messages.add_message(request, messages.ERROR, 'Todavia no paso el tiempo correspondiente para su proxima aplicación de la vacuna') 
                 return redirect('inicio')  
@@ -929,8 +939,10 @@ def agregar_vacuna(request):
     
             us=list(Usuario.objects.filter(dni=infForm['dni']))
             dni=us[int(0)].dni  
+            nombre=us[int(0)].nombre
+            apellido=us[int(0)].apellido
 
-            turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo')
+            turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo', nombre_usuario=nombre, apellido_usuario=apellido)
             turno.save()
                 
             #Aca se actualiza el historial del usuario, dependiendo de la vacuna
@@ -939,7 +951,7 @@ def agregar_vacuna(request):
                 #Vacuna del coronavirus
                 #Depende de las dosis ingresadas, se guarda la fecha de HOY como primera o segunda dosis
                 if infForm['nro_dosis'] == 1:
-                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'])
+                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], nombre_usuario=nombre, apellido_usuario=apellido)
                     historial_covid.save()
                     #Se le da el turno de la segunda dosis de aca a "X" meses
                     
@@ -948,19 +960,19 @@ def agregar_vacuna(request):
                     hora=random.randint(8,15)
                     hora_turno_2= time(hour=hora, minute=45)
                     
-                    turno=Turno(fecha=fecha_turno_2, hora=hora_turno_2, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado='Asignado')
+                    turno=Turno(fecha=fecha_turno_2, hora=hora_turno_2, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)
                     turno.save()
                         
                 else:
-                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'])
+                    historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], nombre_usuario=nombre, apellido_usuario=apellido)
                     historial_covid.save()
             else:
                 if infForm['vacuna']  == "Gripe": #Vacuna de la gripe
-                    historial_gripe=HistorialGripe(usuario=infForm['dni'], fecha_aplicacion_gripe=fecha_turno)
+                    historial_gripe=HistorialGripe(usuario=infForm['dni'], fecha_aplicacion_gripe=fecha_turno, nombre_usuario=nombre, apellido_usuario=apellido)
                     historial_gripe.save()
                 else:
                     #Vacuna de la fiebre amarilla
-                    historial_fiebre=HistorialFiebreA(usuario=infForm['dni'], fecha_aplicacion_fiebre_a=fecha_turno, si_o_no='si')
+                    historial_fiebre=HistorialFiebreA(usuario=infForm['dni'], fecha_aplicacion_fiebre_a=fecha_turno, si_o_no='si', nombre_usuario=nombre, apellido_usuario=apellido)
                     historial_fiebre.save()
             # luego de actualizar el historial, redirigo a inicio_vac
             messages.add_message(request, messages.INFO, 'Se guardo la informacion de la vacuna aplicada')
