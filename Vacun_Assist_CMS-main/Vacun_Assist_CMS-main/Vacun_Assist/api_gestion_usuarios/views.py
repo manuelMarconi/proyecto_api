@@ -352,7 +352,7 @@ def cargar_info_fiebre_a(request):
                     
                     if len(historial)>0:
                         #si existe solo informa q no modifico la bd
-                        messages.add_message(request, messages.INFO, 'No se modifico su eleccion')
+                        messages.add_message(request, messages.INFO, 'Actualización correcta')
                         return redirect('inicio')
                     messages.add_message(request, messages.INFO, 'Informacion guardada')
                     historial=HistorialFiebreA(usuario=dni,si_o_no='no')
@@ -379,14 +379,14 @@ def cargar_info_fiebre_a(request):
                         historial.save()
                         #retorno
                     
-                        messages.add_message(request, messages.INFO, 'Actualizacion correcta')
+                        messages.add_message(request, messages.INFO, 'Actualización correcta')
                         return redirect('inicio')    
                     historial=HistorialFiebreA.objects.create(fecha_aplicacion_fiebre_a=infForm['fecha_aplicacion_fiebre_a'],usuario=dni,si_o_no=infForm['si_o_no'])
                     historial.save()
                     
                     #retorno
                     
-                    messages.add_message(request, messages.INFO, 'Actualizacion correcta')
+                    messages.add_message(request, messages.INFO, 'Su información a sido guardada')
                     return redirect('inicio')             
             else:
                 #Si puso que "si" y no subio una fecha, pide que la ingrese
@@ -402,9 +402,9 @@ def cargar_info_fiebre_a(request):
                         historial=list(HistorialFiebreA.objects.filter(usuario=dni))
                     
                         if len(historial)>0:
-                            messages.add_message(request, messages.INFO, 'No se modifico su eleccion')
+                            messages.add_message(request, messages.INFO, 'Su información a sido guardada')
                             return redirect('inicio')
-                        messages.add_message(request, messages.INFO, 'Informacion guardada')
+                        messages.add_message(request, messages.INFO, 'Su información a sido guardada')
                         historial=HistorialFiebreA(usuario=dni,si_o_no='no')
                         historial.save()
                         return redirect('inicio')      
