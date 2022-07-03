@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador, FormularioVacunas
 from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador, NombreVacunador, Vacunatorio
 import random
 from django.core.mail import send_mail
@@ -57,8 +57,9 @@ def registro(request):
                 return render(request, "autenticacion/registro.html")
             #Validar que las contraseñas son iguales 
             
-            
-            if infForm['contraseña1'] != infForm['contraseña2'] and infForm['contraseña1']< int(6): #si es menor a 8tambien debe entrar al if
+
+            #Si las contraseñas son distintas O la contraseña es menor a 6 digitos tiene que dar el error
+            if infForm['contraseña1'] != infForm['contraseña2'] or len(infForm['contraseña1'])< int(6): #si es menor a 8tambien debe entrar al if
                 messages.add_message(request, messages.INFO, 'ERROR contraseña incorrecta!')
                 return render(request, "autenticacion/registro.html",{"form":miFormulario})
 
@@ -68,8 +69,12 @@ def registro(request):
                 
                 codAleatorio=generarCodigoAleatorio()
                 Codigos.objects.create(codigo=codAleatorio)
+
+                #Para guardar la fecha de registro
+                dia_actual=datetime.now()
+                fecha_reg=date(dia_actual.year, dia_actual.month, dia_actual.day)
                 
-                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo=codAleatorio)
+                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=infForm['direccion'], email=infForm['email'], contraseña=infForm['contraseña1'], codigo=codAleatorio, fecha_registro=fecha_reg)
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],infForm['contraseña1'])
                 user.save()
@@ -286,6 +291,10 @@ def cargar_info_covid(request):
                 if cantidad_dosis == 2:
                     messages.add_message(request, messages.ERROR, 'ERROR No puede recibir mas vacunas de coronavirus porque tiene todas las dosis correspondientes') 
                     return redirect('inicio')
+
+                #El usuario sube "x" dosis aplicadas
+                #La dosis que se tiene que aplicar se guarda en la variable para guardarla en el turno (Para los listados)
+                dosis_covid= cantidad_dosis +1
                     
                     
                 if usuario_edad < 60:
@@ -297,7 +306,7 @@ def cargar_info_covid(request):
                         fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
                         hora=random.randint(8,16)
                         hora_turno=time(hour=hora,minute=30)
-                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado',nombre_usuario=nombre, apellido_usuario=apellido)
+                        turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado',nombre_usuario=nombre, apellido_usuario=apellido, dosis=dosis_covid)
                         turno.save()                        
                         messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
                         return redirect('inicio')
@@ -306,7 +315,7 @@ def cargar_info_covid(request):
                                 #Menor de 60, sin riesgo
                                 #El turno lo asigna manualmente el administrador
                                 #Se agrega a la lista para el administrador, Listado de personas que solicitaron la vacuna del coronavirus (El listado no es para esta demo)
-                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente', nombre_usuario=nombre, apellido_usuario=apellido)
+                        turno=Turno(vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Pendiente', nombre_usuario=nombre, apellido_usuario=apellido, dosis=dosis_covid)
                         turno.save()
                         messages.add_message(request, messages.INFO, 'Su pedido de vacuna ha sido procesado, se te enviara un mail proximamente con los datos de tu turno') 
                         return redirect('inicio')
@@ -322,7 +331,7 @@ def cargar_info_covid(request):
                     fecha_turno = datetime.date(dia_actual+timedelta(days=random.randint(1,7)))
                     hora=random.randint(8,16)
                     hora_turno=time(hour=hora,minute=30)
-                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)                    
+                    turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna='Coronavirus', usuario_a_vacunar=dni, vacunatorio=direc, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido, dosis=dosis_covid)                    
                     turno.save()
 
                     messages.add_message(request, messages.INFO, 'Su turno ha sido reservado. Puede seguirlo en Estatus de turno') 
@@ -895,7 +904,11 @@ def agregar_persona(request):
                 codAleatorio=generarCodigoAleatorio()
                 Codigos.objects.create(codigo=codAleatorio)
 
-                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=vacunatorio, email=infForm['email'], contraseña=contra, codigo=codAleatorio)
+                #Para guardar la fecha de registro
+                dia_actual=datetime.now()
+                fecha_reg=date(dia_actual.year, dia_actual.month, dia_actual.day)
+
+                Usuario.objects.create(nombre=infForm['nombre'], apellido=infForm['apellido'], dni=infForm['dni'], fecha_nacimiento=infForm['fecha_nacimiento'], direccion=vacunatorio, email=infForm['email'], contraseña=contra, codigo=codAleatorio, fecha_registro= fecha_reg)
                 #aca se crea un usuario de tipo User para que se guarde en la base de datos y luego poder autenticar de forma correcta
                 user=User.objects.create_user(infForm['email'],infForm['email'],contra)
                 user.save()
@@ -942,15 +955,23 @@ def agregar_vacuna(request):
             nombre=us[int(0)].nombre
             apellido=us[int(0)].apellido
 
-            turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo', nombre_usuario=nombre, apellido_usuario=apellido)
-            turno.save()
+            #Si cant_dosis tiene informacion, es una vacuna del coronavirus. 
+            #Segun la cantidad de dosis que subio, se cambia el valor
+            if infForm['vacuna'] == 'Coronavirus':
+                turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo', nombre_usuario=nombre, apellido_usuario=apellido, dosis=infForm['nro_dosis'])
+                turno.save()
+            else:
+                turno=Turno(fecha=fecha_turno, hora=hora_turno, vacuna=infForm['vacuna'], usuario_a_vacunar=dni, vacunatorio=vacunatorio, estado='Completo', nombre_usuario=nombre, apellido_usuario=apellido)
+                turno.save()
                 
             #Aca se actualiza el historial del usuario, dependiendo de la vacuna
                 
+
+
             if infForm['vacuna']  == "Coronavirus":
                 #Vacuna del coronavirus
                 #Depende de las dosis ingresadas, se guarda la fecha de HOY como primera o segunda dosis
-                if infForm['nro_dosis'] == 1:
+                if infForm['nro_dosis'] == '1':
                     historial_covid=HistorialCovid(usuario=infForm['dni'], cantidad_dosis=infForm['nro_dosis'], nombre_usuario=nombre, apellido_usuario=apellido)
                     historial_covid.save()
                     #Se le da el turno de la segunda dosis de aca a "X" meses
@@ -960,7 +981,7 @@ def agregar_vacuna(request):
                     hora=random.randint(8,15)
                     hora_turno_2= time(hour=hora, minute=45)
                     
-                    turno=Turno(fecha=fecha_turno_2, hora=hora_turno_2, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido)
+                    turno=Turno(fecha=fecha_turno_2, hora=hora_turno_2, vacuna=infForm['vacuna'], usuario_a_vacunar=infForm['dni'], vacunatorio=vacunatorio, estado='Asignado', nombre_usuario=nombre, apellido_usuario=apellido, dosis='2')
                     turno.save()
                         
                 else:
@@ -1026,10 +1047,20 @@ def informe_cantidad_persona(request):
     #Se vacunaron "x" cantidad de personas:
     #Mostrar si o si: DNI y vacunatorio
     #Podemos mostrar para que quede mejor: Nombre y apellido, fecha de nacimiento
-    #Tambien se puede filtrar por "vacunas externas", las que no se dieron en Vacun Assist y las sube el usuario
     
-    
+    if request.method=="POST":
+        miFormulario=FormularioVacunas(request.POST)  
+
+        if miFormulario.is_valid():
+            infForm=miFormulario.cleaned_data #Aca se guarda toda la info que se lleno en los formularios        
+            vac=infForm["vacuna"]
+            turnos=list(Turno.objects.filter(vacuna=vac, estado='Completo'))
+            return render(request, "gestion_admin/personas_vacuna.html",{"turnos":turnos})
+        else:
+            messages.add_message(request, messages.INFO, 'Formulario invalido') 
+
     return render(request, "gestion_admin/informe_registro.html")
+    
 
 def informe_covid(request): # HECHO
     #Listado:

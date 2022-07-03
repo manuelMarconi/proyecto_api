@@ -32,10 +32,10 @@
 <body>
     <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
     <center>
-        {% if personas %}
-            <h1>Informe de personas registradas</h1>
+        {% if turnos %}
+            <h1>Informe de vacunación</h1>
             <b>Buscar: 
-                <input id="gfg" type="text" placeholder="Buscar">
+            <input id="gfg" type="text" placeholder="Buscar">
             </b>
             <br>
             <br>
@@ -45,18 +45,22 @@
                     <th>Apellido</th>
                     <th>DNI</th>
                     <th>Vacunatorio</th>
-                    <th>Fecha de nacimiento</th>
-                    <th>Fecha de registro</th>
+                    <th>Fecha</th>
+                    <th>Dosis</th>
                 </tr>
-                <tbody id="personas">
-                    {% for per in personas %}
+                <tbody id="vacunas">
+                    {% for tur in turnos %}
                         <tr>
-                            <td>{{per.nombre}}</td>
-                            <td>{{per.apellido}}</td>
-                            <td>{{per.dni}}</td>
-                            <td>{{per.direccion}}</td>
-                            <td>{{per.fecha_nacimiento}}</td>
-                            <td>{{per.fecha_registro}}</td>
+                            <td>{{tur.nombre_usuario}}</td>
+                            <td>{{tur.apellido_usuario}}</td>
+                            <td>{{tur.usuario_a_vacunar}}</td>
+                            <td>{{tur.vacunatorio}}</td>
+                            <td>{{tur.fecha}}</td>
+                            {% if tur.dosis %}
+                                <td>{{tur.dosis}}</td>
+                            {% else %}
+                                <td>N/A</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -66,7 +70,7 @@
                 $(document).ready(function() {
                     $("#gfg").on("keyup", function() {
                         var value = $(this).val().toLowerCase();
-                        $("#personas tr").filter(function() {
+                        $("#vacunas tr").filter(function() {
                             $(this).toggle($(this).text()
                             .toLowerCase().indexOf(value) > -1)
                         });
@@ -74,25 +78,23 @@
                 });
             </script>
         {% else %}
-            No hay personas registradas
+            No hay personas vacunadas.
         {% endif %}
     </center>
 
-        <p style="text-align:center">       
-           <a href="{% url 'info_personas' %}">
-                Volver al menu anterior
-            </a>
-        </p> 
+    <p style="text-align:center">       
+        <a href="{% url 'informe_cant_persona' %}">
+            Volver al menu anterior
+        </a>
+    </p> 
 
-      <p style="text-align:center">       
-           <a href="{% url 'inicio_admin' %}">
-               Volver a inicio
-            </a>
-        </p> 
+    <p style="text-align:center">       
+        <a href="{% url 'inicio_admin' %}">
+            Volver a inicio
+        </a>
+    </p> 
+     
     </span>
-
-
-  
 </body>
   
 </html>

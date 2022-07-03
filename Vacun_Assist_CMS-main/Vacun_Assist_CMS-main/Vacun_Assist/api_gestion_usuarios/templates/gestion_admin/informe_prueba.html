@@ -1,0 +1,101 @@
+{% extends "gestion_usuarios/base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
+  
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+          
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+          
+        h1 {
+            color: black;
+        }
+    </style>
+</head>
+  
+<body>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <center>
+        <h1>Informe de vacunación</h1>
+        <b>Buscar: 
+          <input id="gfg" type="text" 
+                 placeholder="Buscar">
+        </b>
+        <br>
+        <br>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
+                <th>Vacunatorio</th>
+                <th>Fecha</th>
+                <th>Dosis</th>
+            </tr>
+            <tbody id="geeks">
+                {% for tur in turnos %}
+                <tr>
+                    <td>{{tur.nombre_usuario}}</td>
+                    <td>{{tur.apellido_usuario}}</td>
+                    <td>{{tur.usuario_a_vacunar}}</td>
+                    <td>{{tur.vacunatorio}}</td>
+                    <td>{{tur.fecha}}</td>
+                    {% if tur.dosis %}
+                        <td>{{tur.dosis}}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+  
+        <script>
+            $(document).ready(function() {
+                $("#gfg").on("keyup", function() {
+                    var value = $(this).val().toLowerCase();
+                    $("#geeks tr").filter(function() {
+                        $(this).toggle($(this).text()
+                        .toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+        </script>
+  </center>
+
+  <p style="text-align:center">       
+    <a href="{% url 'informe_cant_persona' %}">
+        Volver al menu anterior
+    </a>
+</p> 
+
+<p style="text-align:center">       
+    <a href="{% url 'inicio_admin' %}">
+        Volver a inicio
+    </a>
+</p> 
+  </span>
+
+
+  
+</body>
+  
+</html>
+
+{% endblock %}

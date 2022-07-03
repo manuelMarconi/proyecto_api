@@ -17,6 +17,7 @@ diccNombre ={
     "Zona terminal de omnibus": "terminal_00",
 }
 
+
 class FormularioRegistro(forms.Form):
 
     nombre=forms.CharField(max_length=30)
@@ -104,3 +105,7 @@ class FormularioNombreVacunador(forms.Form):
     nombre=forms.CharField(max_length=30) 
     nombre_actual=forms.CharField(max_length=30) 
 #    nuevo_nombre=forms.CharField(max_length=30)
+
+class FormularioVacunas(forms.Form):
+    vacuna=forms.CharField(max_length=30)
+    

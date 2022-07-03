@@ -4,14 +4,27 @@
 <html>
     
     <body >
-        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-        Informe de personas registradas en el sistema
-
-        <p style="text-align:center">       
-            <a href="{% url 'inicio_admin' %}">
-                Volver a inicio
-            </a>
-        </p>
+        <form action="/informe_cant_persona" method="POST"> {% csrf_token %}
+            <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+        
+            <p> Elija una vacuna para mostrar:
+            <select name="vacuna">
+                <option value="Coronavirus">Coronavirus</option>
+                <option value="Fiebre Amarilla">Fiebre Amarilla</option>
+                <option value="Gripe">Gripe</option>
+              </select>
+            </p>
+        
+            <p style="text-align:center">       
+                <input type="submit" value="Mostrar Personas">
+            </p>
+        
+            <p style="text-align:center">       
+                <a href="{% url 'inicio_admin' %}">
+                    Volver a inicio
+                </a>
+            </p> 
+        </form>
         </span>
 
     </body>
