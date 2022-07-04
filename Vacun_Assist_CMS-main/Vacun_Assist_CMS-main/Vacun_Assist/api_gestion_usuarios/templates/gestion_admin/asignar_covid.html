@@ -1,37 +1,40 @@
 {% extends "gestion_usuarios/base.html" %}
 
+
 {% block content %}
 <html>
     <body>
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-            {% endif %}
     <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-        <u><b> Turnos de Coronavirus </b></u> 
+    <p style="text-align:center">
+        <u><b> Turnos del día </b></u> 
     </p>
-    {% if turnos%}
+    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            <span style="background-color: rgb(251, 133, 3)"> 
+                                {{ message }}
+                                </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+        {% endif %}
+    {% if turnos %}
         {% for turno in turnos %}
         <ul> 
             <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
-            <li> <b> Nombre y apellido: </b> {{turno.apellido_usuario}}, {{turno.nombre_usuario}}</li>
+            <li> <b> Nombre: </b>  {{turno.apellido_usuario}}, {{turno.nombre_usuario}}</li>
             <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
+            <li> <b> Hora: </b> {{turno.hora}} </li>
 
             <form action="/asignar_turno_covid" method="POST"> {% csrf_token %}
                 <li> <b>Estado</b>:
                     <select name="estado">
                         <option value="asignar">Asignar</option>
-                        <option value="rechazar">Rechazar</option>
+                        <option value="rechazar">Rechadar</option>
                     </select>
                 </li>
-
-                <p>
-                    Elegir fecha aplicacion:<input type="date" name="fecha_apliacion"> 
-                </p>
-
                 <p style="text-align:center">       
                     <input type="submit" value="Cambiar estado">
                 </p>
@@ -39,7 +42,7 @@
         </ul>
         {% endfor %}
     {% else %}
-        No hay turnos Pendiente de Coronavirus
+        No hay turnos Pendiente Para la vacuna de Coronavirus
     {% endif %}
 
 

@@ -23,15 +23,16 @@
                     </li>
                     {% endfor %}
                 </ul>
-                    {% endif %}
-            <li> Cantidad de dosis aplicadas: 
-                <select name="cantidad_dosis">
-                    <option value="0">0 dosis</option>
-                    <option value="1">1 dosis</option>
-                    <option value="2">2 dosis</option>
-                  </select>
-                </li> 
-           
+            {% endif %}
+                
+                <li> Cantidad de dosis aplicadas: 
+                    <select name="cantidad_dosis">
+                        <option value="0">0 dosis</option>
+                        <option value="1">1 dosis</option>
+                        <option value="2">2 dosis</option>
+                    </select>
+                    </li> 
+          
             <p></p>
             <li> ¿Posee alguna enfermedad de riesgo?
                 <select name="si_o_no">
@@ -44,14 +45,16 @@
             <p style="text-align:center">       
                 <input type="submit" value="Pedir turno">
             </p>
-
+                
+            
             <p style="text-align:center">       
                 <a href="{% url 'inicio' %}">
                     Volver a inicio
                 </a>
             </p> 
-    
+            
         </form>
+        
     </span>
     </body>
 </html>

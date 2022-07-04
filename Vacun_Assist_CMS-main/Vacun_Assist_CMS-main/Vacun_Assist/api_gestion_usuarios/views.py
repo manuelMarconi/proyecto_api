@@ -30,11 +30,12 @@ from datetime import date, datetime, timedelta, time
 ############ 
 def inicio(request):
     
-   # if request.user.is_authenticated:
-   #     if(tieneTurno(request,"Fiebre amarilla")):
-   #         return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
-   #     return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
+    if request.user.is_authenticated:
+        if(tieneTurno(request,"Fiebre amarilla")):
+            return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
+        return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
     return render(request, "gestion_usuarios/inicio.html")
+
 def inicio_vacunador(request):
     return render (request, "gestion_vacunador/inicio_vac.html")
 
@@ -1062,22 +1063,9 @@ def informe_cantidad_persona(request):
     return render(request, "gestion_admin/informe_registro.html")
     
 
-def informe_covid(request): # HECHO
-    #Listado:
-    #Personas que pidieron la vacuna de covid
 
-    turnos=list(Turno.objects.filter(vacuna='Coronavirus'))
-    return render(request, "gestion_admin/informe_covid.html",{"turnos":turnos} )
 
-def informe_fiebre_a(request): # HECHO -
-    #Listado:
-    #Personas que pidieron la vacuna de la fiebre amarilla
-
-    turnos=list(Turno.objects.filter(vacuna='Fiebre Amarilla'))
-    return render(request, "gestion_admin/informe_fiebre_a.html",{"turnos":turnos})
-
-def informe_personas_registradas(request):  # HECHO - ANDA BIEN
-    #Listado:
+def informe_personas_registradas(request): 
     #Personas que se registraron
     #Filtrar por DNI, vacunatorio.
      
@@ -1141,6 +1129,9 @@ def modificar_nombre_vacunatorio(request):
             #Busco en tabla "Vacunatorio" el vacunatorio a cambiar
             #Guardo el nuevo nombre
             vac=list(Vacunatorio.objects.filter(nombre=vacunatorio_nuevo))
+            while (len(vac) == int(0)):
+                messages.add_message(request, messages.INFO, 'Nombre incorrecto')    
+                return render(request, "gestion_admin/modificar_nombre.html",{"vacunatorios":vacunatorios_lista})
             vac=vac[int(0)]
             vac.nombre=nombre_nuevo
             vac.save()
@@ -1179,7 +1170,7 @@ def modificar_nombre_vacunatorio(request):
 
 
             messages.add_message(request, messages.INFO, 'Actualizacion correcta de nombre')    
-            return render(request, "gestion_admin/modificar_nombre.html")
+            return render(request, "gestion_admin/modificar_nombre.html",{"vacunatorios":vacunatorios_lista})
         else:
             messages.add_message(request, messages.INFO, 'Formulario invalido') 
     return render(request, "gestion_admin/modificar_nombre.html", {"vacunatorios":vacunatorios_lista})
@@ -1189,14 +1180,16 @@ def asignar_turno_covid(request):
     #Listado de gente que pidio vacuna covid 
     # + opcion de asignar turno (cambiar el estado del turno existente y asignarle una fecha)
     # + ver historial de la persona para "aceptar" y "rechazar" el pedido del turno
-    turnos=list(Turno.objects.filter(estado='Pendiente'))
+    turnos=list(Turno.objects.filter(estado='Pendiente', vacuna="Fiebre Amarilla"))
+   
     cant=len(turnos)
     cont=0
+   
     while cont != cant:
-        turnos=list(Turno.objects.filter(estado='Pendiente')) # ,vacuna='Coronavirus'
+        turnos=list(Turno.objects.filter(estado='Pendiente', vacuna="Fiebre Amarilla"))
         turno=turnos[int(cont)]
         cont=cont+1
-        if request.method=="POST":   # NO ENTRA ACA
+        if request.method=="POST":  
             miFormulario=FormularioEstadoTurnoAdmin(request.POST)
             mostrar_turno(request,turno, miFormulario)
             if miFormulario.is_valid():
@@ -1221,14 +1214,12 @@ def asignar_turno_covid(request):
                     tur=tur[0]
                     tur.estado='Incompleto'
                     tur.save()
-                    
-                return render(request, "gestion_admin/asignar_covid.html") 
         else:
-            messages.add_message(request, messages.INFO, 'ENTRA ACA')
-            miFormulario=FormularioEstadoTurnoAdmin()    
+            messages.add_message(request, messages.ERROR, 'Invalido')
+            return render(request, "gestion_admin/asignar_covid.html") 
     else:
         messages.add_message(request, messages.ERROR, 'Sin turnos!!')
-    return render(request, "gestion_admin/asignar_covid.html", {"form": miFormulario})
+    return render(request, "gestion_admin/asignar_covid.html")
 
 
 def asignar_turno_fiebre_a(request):
@@ -1277,3 +1268,16 @@ def asignar_turno_fiebre_a(request):
 
 
 
+def informe_covid(request): #NO SE USA
+    #Listado:
+    #Personas que pidieron la vacuna de covid
+
+    turnos=list(Turno.objects.filter(vacuna='Coronavirus'))
+    return render(request, "gestion_admin/informe_covid.html",{"turnos":turnos} )
+
+def informe_fiebre_a(request): #  
+    #Listado:
+    #Personas que pidieron la vacuna de la fiebre amarilla
+
+    turnos=list(Turno.objects.filter(vacuna='Fiebre Amarilla'))
+    return render(request, "gestion_admin/informe_fiebre_a.html",{"turnos":turnos})

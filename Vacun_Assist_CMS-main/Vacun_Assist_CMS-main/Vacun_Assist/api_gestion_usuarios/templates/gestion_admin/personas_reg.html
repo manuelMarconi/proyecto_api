@@ -30,11 +30,11 @@
 </head>
   
 <body>
-    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 210px;text-align: left">
     <center>
         {% if personas %}
             <h1>Informe de personas registradas</h1>
-            <b>Buscar: 
+            <b>Buscar por cualquier columna: 
                 <input id="gfg" type="text" placeholder="Buscar">
             </b>
             <br>
@@ -74,7 +74,11 @@
                 });
             </script>
         {% else %}
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 500px;text-align: left">
+    
             No hay personas registradas
+
+        </span>
         {% endif %}
     </center>
 
