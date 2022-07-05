@@ -91,7 +91,7 @@ def registro(request):
                 user.save()
                 #Envio de email
                 mensaje="Se registro tu informacion en VacunAssist! Tu codigo para iniciar sesion es: "+ str(codAleatorio)
-                send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
+                #send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro Exitoso')
                 login(request, user)
                 return redirect('inicio')
