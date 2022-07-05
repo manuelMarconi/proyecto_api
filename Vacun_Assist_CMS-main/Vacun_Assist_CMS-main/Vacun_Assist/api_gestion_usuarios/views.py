@@ -1226,6 +1226,15 @@ def asignar_turno_covid(request):
         messages.add_message(request, messages.ERROR, 'Sin turnos!!')
     return render(request, "gestion_admin/asignar_covid.html")
 
+def asignar_turno_covid_2(request):
+     #El admin ve el historial de vacunaciones pendientes
+    turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Asignado"))##CAMBIAR, SOLO DE EJEMPLO
+    return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+
+
+
+def marcar_turno_covid_2(request):   
+    return render(request, "gestion_admin/marcar_turno_covid.html")
 
 def asignar_turno_fiebre_a(request):
     #Listado de gente que pidio vacuna de la fiebre amarilla 

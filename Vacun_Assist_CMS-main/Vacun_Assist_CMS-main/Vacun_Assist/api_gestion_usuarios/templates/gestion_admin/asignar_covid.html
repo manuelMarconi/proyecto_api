@@ -1,60 +1,105 @@
 {% extends "gestion_usuarios/base.html" %}
 
-
 {% block content %}
+<!DOCTYPE html>
 <html>
-    <body>
-    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 400px;text-align: left">
-    <p style="text-align:center">
-        <u><b> Turnos del día </b></u> 
-    </p>
-    {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                            <span style="background-color: rgb(251, 133, 3)"> 
-                                {{ message }}
-                                </span>
-                        </span>
-                    </li>
+  
+<head>
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+    </script>
+  
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+          
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+          
+        h1 {
+            color: black;
+        }
+    </style>
+</head>
+  
+<body>
+    <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 210px;text-align: left">
+    <center>
+        {% if turnos %}
+            <h1>Informe de vacunación pendiente</h1>
+            <b>Buscar por cualquier columna: 
+            <input id="gfg" type="text" placeholder="Buscar">
+            </b>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>DNI</th>
+                    <th>Vacunatorio</th>
+                    <th>Fecha</th>
+                    <th>Dosis</th>
+                </tr>
+                <tbody id="vacunas">
+                    {% for tur in turnos %}
+                        <tr>
+                            <td>{{tur.nombre_usuario}}</td>
+                            <td>{{tur.apellido_usuario}}</td>
+                            <td>{{tur.usuario_a_vacunar}}</td>
+                            <td>{{tur.vacunatorio}}</td>
+                            <td>{{tur.fecha}}</td>
+                            {% if tur.dosis %}
+                                <td>{{tur.dosis}}</td>
+                            {% else %}
+                                <td>N/A</td>
+                            {% endif %}
+                            <th><button>Marcar turno</button></th>
+                        </tr>
                     {% endfor %}
-                </ul>
+                </tbody>
+            </table>
+  
+            <script>
+                $(document).ready(function() {
+                    $("#gfg").on("keyup", function() {
+                        var value = $(this).val().toLowerCase();
+                        $("#vacunas tr").filter(function() {
+                            $(this).toggle($(this).text()
+                            .toLowerCase().indexOf(value) > -1)
+                        });
+                    });
+                });
+            </script>
+        {% else %}
+        <span >
+            <b>No hay turnos pendientes</b>
+        </span>
         {% endif %}
-    {% if turnos %}
-        {% for turno in turnos %}
-        <ul> 
-            <li> <b> Vacuna: </b> {{turno.vacuna}}  </li>
-            <li> <b> Nombre: </b>  {{turno.apellido_usuario}}, {{turno.nombre_usuario}}</li>
-            <li> <b> DNI: </b> {{turno.usuario_a_vacunar}}</li>
-            <li> <b> Hora: </b> {{turno.hora}} </li>
+    </center>
 
-            <form action="/asignar_turno_covid" method="POST"> {% csrf_token %}
-                <li> <b>Estado</b>:
-                    <select name="estado">
-                        <option value="asignar">Asignar</option>
-                        <option value="rechazar">Rechadar</option>
-                    </select>
-                </li>
-                <p style="text-align:center">       
-                    <input type="submit" value="Cambiar estado">
-                </p>
-            </form>
-        </ul>
-        {% endfor %}
-    {% else %}
-        No hay turnos Pendiente Para la vacuna de Coronavirus
-    {% endif %}
-
+    <p style="text-align:center">       
+        <a href="{% url 'informe_cant_persona' %}">
+            Volver al menu anterior
+        </a>
+    </p> 
 
     <p style="text-align:center">       
         <a href="{% url 'inicio_admin' %}">
             Volver a inicio
         </a>
     </p> 
-
+     
     </span>
-    </body>
-
- 
+</body>
+  
 </html>
+
 {% endblock %}
