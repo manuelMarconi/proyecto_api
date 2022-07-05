@@ -1,6 +1,9 @@
 {% extends "gestion_usuarios/base.html" %}
 
 {% block content %}
+
+{% load static %}
+{% load my_custom_tags %}
 <!DOCTYPE html>
 <html>
   
@@ -8,7 +11,11 @@
     <script src=
 "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
     </script>
-  
+    <script>
+        function hola(){
+            console.log("HOLA")
+        }
+    </script>
     <style>
         table {
             font-family: arial, sans-serif;
@@ -47,6 +54,7 @@
                     <th>Vacunatorio</th>
                     <th>Fecha</th>
                     <th>Dosis</th>
+                    <th>Estado</th>
                 </tr>
                 <tbody id="vacunas">
                     {% for tur in turnos %}
@@ -61,7 +69,18 @@
                             {% else %}
                                 <td>N/A</td>
                             {% endif %}
-                            <th><button>Marcar turno</button></th>
+                            <td>
+                                <form action="/asignar_covid" method="post">{% csrf_token %}
+                                    <input type="hidden" name="dni" value="{{tur.usuario_a_vacunar}}" readonly />
+                                    <select name="estado">
+                                        <option value="Asignado">Aceptar turno</option>
+                                        <option value="Incompleto">Rechazar turno</option>>
+                                    </select>
+                                    <br>
+                                    <input type="submit" value="Modificar"></input>
+                                </form>
+                            </td>
+                            
                         </tr>
                     {% endfor %}
                 </tbody>

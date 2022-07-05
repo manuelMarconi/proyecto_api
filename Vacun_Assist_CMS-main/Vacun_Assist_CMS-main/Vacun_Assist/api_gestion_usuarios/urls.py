@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import agregar_persona, iniciar_sesion_vacunador, inicio, observar_turnos_dia, registro, cerrar_sesion, iniciar_sesion, cargar_info_covid, cargar_info_fiebre_a, cargar_info_gripe, modificar_perfil, estatus_turno, sacar_turno_fiebre_amarilla, ver_historial, iniciar_sesion_vacunador, ver_historial, sacar_turno_fiebre_amarilla, observar_turnos_dia, agregar_persona, mi_perfil, inicio_vacunador, mi_perfil_vacunador, listado_turnos, mostrar_turno, inicio_admin, informe_cantidad_persona, informe_covid, informe_fiebre_a, informe_personas_registradas, ver_historial_admin, modificar_nombre_vacunatorio, asignar_turno_covid, asignar_turno_fiebre_a, inicio_administrador, agregar_vacuna, ver_historial_vac,asignar_turno_covid_2, marcar_turno_covid_2
+from .views import agregar_persona, iniciar_sesion_vacunador, inicio, observar_turnos_dia, registro, cerrar_sesion, iniciar_sesion, cargar_info_covid, cargar_info_fiebre_a, cargar_info_gripe, modificar_perfil, estatus_turno, sacar_turno_fiebre_amarilla, ver_historial, iniciar_sesion_vacunador, ver_historial, sacar_turno_fiebre_amarilla, observar_turnos_dia, agregar_persona, mi_perfil, inicio_vacunador, mi_perfil_vacunador, listado_turnos, mostrar_turno, inicio_admin, informe_cantidad_persona, informe_covid, informe_fiebre_a, informe_personas_registradas, ver_historial_admin, modificar_nombre_vacunatorio, asignar_turno_covid, asignar_turno_fiebre_a, inicio_administrador, agregar_vacuna, ver_historial_vac,asignar_turno_covid_2, marcar_turno_covid_2,asignar_turno_fiebre_a_2
 
 urlpatterns = [
     ###
@@ -49,6 +49,6 @@ urlpatterns = [
     path('asignar_covid', asignar_turno_covid_2 ,name='asignar_covid'),
     path('marcar_turno_covid',marcar_turno_covid_2,name='marcar_turno_covid'),
     
-    path('asignar_turno_fiebre', asignar_turno_fiebre_a ,name='asignar_turno_fiebre'),
+    path('asignar_turno_fiebre', asignar_turno_fiebre_a_2 ,name='asignar_turno_fiebre'),
 
 ]

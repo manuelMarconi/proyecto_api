@@ -109,3 +109,6 @@ class FormularioNombreVacunador(forms.Form):
 class FormularioVacunas(forms.Form):
     vacuna=forms.CharField(max_length=30)
     
+class FormularioModificarEstado(forms.Form):
+     dni=forms.CharField(max_length=8)
+     estado=forms.CharField(max_length=30)

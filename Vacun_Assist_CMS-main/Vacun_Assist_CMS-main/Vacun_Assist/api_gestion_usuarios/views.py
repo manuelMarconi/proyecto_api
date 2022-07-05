@@ -1,5 +1,7 @@
 # Create your views here.
+from cgi import MiniFieldStorage
 from cgitb import html
+from cmath import inf
 from email import message
 import email
 from mmap import PAGESIZE
@@ -10,7 +12,7 @@ from django.shortcuts import render, redirect
 #from django.views.generic import View
 from django.contrib.auth import login, logout, authenticate
 #from django.contrib import messages
-from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador, FormularioVacunas
+from api_gestion_usuarios.forms import FormularioAutenticacion, FormularioModificar, FormularioModificarEstado, FormularioRegistro, FormularioCovid, FormularioFiebreA, FormularioGripe, FormularioAutenticacionVacunador, FormularioEstadoTurno, FormularioRegistroVacunacion, FormularioAutenticacionAdmin, FormularioAgregarVacuna, FormularioNombreVacunador, FormularioEstadoTurnoAdmin, FormularioBuscarUsuario, FormularioBuscarVacunador, FormularioVacunas
 from api_gestion_usuarios.models import Codigos, Usuario, Turno, Vacunador, HistorialCovid, HistorialFiebreA, HistorialGripe, Administrador, NombreVacunador, Vacunatorio
 import random
 from django.core.mail import send_mail
@@ -1228,7 +1230,48 @@ def asignar_turno_covid(request):
 
 def asignar_turno_covid_2(request):
      #El admin ve el historial de vacunaciones pendientes
-    turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Asignado"))##CAMBIAR, SOLO DE EJEMPLO
+    
+    turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente"))
+    if request.method=="POST":  
+        miFormulario=FormularioModificarEstado(request.POST)
+        if miFormulario.is_valid():
+            ##extraigo datos para luego modificar
+            infForm=miFormulario.cleaned_data
+            turnoMod=list(Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente",usuario_a_vacunar=infForm['dni']))
+            turnoMod=turnoMod[0]
+            if (infForm['estado']=="Incompleto"): #EN CASO DE SER INCOMPLETO ELIMINO EL TURNO
+                Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente",usuario_a_vacunar=infForm['dni']).delete()
+                turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente"))
+                return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+            turnoMod.estado=infForm['estado']
+            turnoMod.save()
+            
+            #actualizo los turnos a mostrar
+            turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente"))
+            return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+    return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+
+def asignar_turno_fiebre_a_2(request):
+     #El admin ve el historial de vacunaciones pendientes
+    
+    turnos=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente"))
+    if request.method=="POST":  
+        miFormulario=FormularioModificarEstado(request.POST)
+        if miFormulario.is_valid():
+            ##extraigo datos para luego modificar
+            infForm=miFormulario.cleaned_data
+            turnoMod=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente",usuario_a_vacunar=infForm['dni']))
+            turnoMod=turnoMod[0]
+            if (infForm['estado']=="Incompleto"): #EN CASO DE SER INCOMPLETO ELIMINO EL TURNO
+                Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente",usuario_a_vacunar=infForm['dni']).delete()
+                turnos=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente"))
+                return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+            turnoMod.estado=infForm['estado']
+            turnoMod.save()
+            
+            #actualizo los turnos a mostrar
+            turnos=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente"))
+            return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
     return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
 
 
