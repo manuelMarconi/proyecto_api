@@ -1242,7 +1242,17 @@ def asignar_turno_covid_2(request):
             if (infForm['estado']=="Incompleto"): #EN CASO DE SER INCOMPLETO ELIMINO EL TURNO
                 Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente",usuario_a_vacunar=infForm['dni']).delete()
                 turnos=list(Turno.objects.filter(vacuna="Coronavirus", estado="Pendiente"))
+                usuario=list(Usuario.objects.filter(dni=infForm['dni']))
+                email=usuario[0].email
+                #Mando mail al usuario
+                mensaje="Su pedido de vacuna ha sido rechazado." 
+                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', email)
                 return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+            usuario=list(Usuario.objects.filter(dni=infForm['dni']))
+            email=usuario[0].email
+            #Mando mail al usuario
+            mensaje="Su pedido de vacuna ha sido aceptado! Ingrese a su cuenta en VacunAssist para ver los detalles del turno" 
+            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', email)
             turnoMod.estado=infForm['estado']
             turnoMod.save()
             
@@ -1265,14 +1275,26 @@ def asignar_turno_fiebre_a_2(request):
             if (infForm['estado']=="Incompleto"): #EN CASO DE SER INCOMPLETO ELIMINO EL TURNO
                 Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente",usuario_a_vacunar=infForm['dni']).delete()
                 turnos=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente"))
-                return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+                
+                usuario=list(Usuario.objects.filter(dni=infForm['dni']))
+                email=usuario[0].email
+                #Mando mail al usuario
+                mensaje="Su pedido de vacuna ha sido rechazado." 
+                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', email)
+                
+                return render(request, "gestion_admin/asignar_fiebre.html",{"turnos": turnos})
+            usuario=list(Usuario.objects.filter(dni=infForm['dni']))
+            email=usuario[0].email
+            #Mando mail al usuario
+            mensaje="Su pedido de vacuna ha sido aceptado! Ingrese a su cuenta en VacunAssist para ver los detalles del turno" 
+            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', email)
             turnoMod.estado=infForm['estado']
             turnoMod.save()
             
             #actualizo los turnos a mostrar
             turnos=list(Turno.objects.filter(vacuna="Fiebre amarilla", estado="Pendiente"))
-            return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
-    return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
+            return render(request, "gestion_admin/asignar_fiebre.html",{"turnos": turnos})
+    return render(request, "gestion_admin/asignar_fiebre.html",{"turnos": turnos})
 
 
 

@@ -9,20 +9,6 @@
             <u><b>Historial de vacunación</b></u> 
         </p>
 
-        {% if historial_covid %}
-            <li> <b> Nombre y apellido: </b> {{historial_covid.apellido_usuario}}, {{historial_covid.nombre_usuario}}</li>
-            <li> <b> DNI: </b> {{historial_covid.usuario}}</li>
-        {% else %}
-            {% if historial_fiebre_a %}
-                <li> <b> Nombre y apellido: </b> {{historial_fiebre_a.apellido_usuario}}, {{historial_fiebre_a.nombre_usuario}}</li>
-                <li> <b> DNI: </b> {{historial_fiebre_a.usuario}}</li>
-            {% else %}
-                {% if historial_gripe %}
-                    <li> <b> Nombre y apellido: </b> {{historial_gripe.apellido_usuario}}, {{historial_gripe.nombre_usuario}}</li>
-                    <li> <b> DNI: </b> {{historial_gripe.usuario}}</li>
-                {% endif %}
-            {% endif %}
-        {% endif %}
 
 
         
