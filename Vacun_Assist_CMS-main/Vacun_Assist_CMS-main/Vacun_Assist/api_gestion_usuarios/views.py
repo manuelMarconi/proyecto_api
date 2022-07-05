@@ -930,7 +930,7 @@ def agregar_persona(request):
                 send_mail('Registro exitoso',mensaje,'vacun.assist.cms@hotmail.com', [infForm['email']])
                 messages.add_message(request, messages.INFO, 'Registro exitoso en VacunAssist')
                 dni=infForm['dni']
-                return render (request, "gestion_vacunador/agregar_vacuna.html")
+                return redirect('inicio_vac')
 
             else:
                 messages.add_message(request, messages.INFO, 'ERROR dni invalido!')
@@ -1246,13 +1246,13 @@ def asignar_turno_covid_2(request):
                 email=usuario[0].email
                 #Mando mail al usuario
                 mensaje="Su pedido de vacuna ha sido rechazado." 
-                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', email)
+                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', [email])
                 return render(request, "gestion_admin/asignar_covid.html",{"turnos": turnos})
             usuario=list(Usuario.objects.filter(dni=infForm['dni']))
             email=usuario[0].email
             #Mando mail al usuario
             mensaje="Su pedido de vacuna ha sido aceptado! Ingrese a su cuenta en VacunAssist para ver los detalles del turno" 
-            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', email)
+            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', [email])
             turnoMod.estado=infForm['estado']
             turnoMod.save()
             
@@ -1280,14 +1280,14 @@ def asignar_turno_fiebre_a_2(request):
                 email=usuario[0].email
                 #Mando mail al usuario
                 mensaje="Su pedido de vacuna ha sido rechazado." 
-                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', email)
+                send_mail('Turno rechazado',mensaje,'vacun.assist.cms@hotmail.com', [email])
                 
                 return render(request, "gestion_admin/asignar_fiebre.html",{"turnos": turnos})
             usuario=list(Usuario.objects.filter(dni=infForm['dni']))
             email=usuario[0].email
             #Mando mail al usuario
             mensaje="Su pedido de vacuna ha sido aceptado! Ingrese a su cuenta en VacunAssist para ver los detalles del turno" 
-            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', email)
+            send_mail('Turno asignado',mensaje,'vacun.assist.cms@hotmail.com', [email])
             turnoMod.estado=infForm['estado']
             turnoMod.save()
             
