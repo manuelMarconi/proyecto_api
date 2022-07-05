@@ -21,13 +21,13 @@
                             <p> <u>Fecha de aplicación de la primera dosis</u>: {{historial_c.fecha_primeradosis}}</p>
                         {% endif %}
                         {% if historial_c.vacuna_externa_covid_dosis_1 %}
-                            <p>  Esta vacuna no fue aplicada en Vacun Assist</p>
+                            <p>  Esta dosis no fue aplicada en Vacun Assist</p>
                         {% endif %}
                         {% if historial_c.fecha_segundadosis %}
                             <p>  <u>Fecha de aplicación de la segunda dosis</u>: {{historial_c.fecha_segundadosis}}</p>
                         {% endif %}
                         {% if historial_c.vacuna_externa_covid_dosis_2 %}
-                            <p>  Esta vacuna no fue aplicada en Vacun Assist</p>
+                            <p>  Esta dosis no fue aplicada en Vacun Assist</p>
                         {% endif %}
                         {% else %}
                             <p> No hay historial para mostrar </p> 
@@ -49,6 +49,9 @@
                         {% else %}
                             <p> <u>Fecha de aplicación</u>: A confirmar </p>
                         {% endif %}
+                        {% if historial_f.vacuna_externa_fiebre != False %}
+                            Esta dosis no fue aplicada en VacunAssist
+                        {% endif %}
                     {% else %}
                         <p> No hay historial para mostrar</p> 
                     {% endif %} 
@@ -66,6 +69,9 @@
                 {% for historial_g in historial_gripe %}  
                     {% if historial_g.fecha_aplicacion_gripe %} 
                         <p> <u>Fecha de la última aplicación</u>: {{historial_g.fecha_aplicacion_gripe}}</p>
+                    {% endif %}
+                    {% if historial_g.vacuna_externa_gripe != False %}
+                        Esta dosis no fue aplicada en VacunAssist
                     {% endif %}
                 {% endfor %}
             {% else %} 

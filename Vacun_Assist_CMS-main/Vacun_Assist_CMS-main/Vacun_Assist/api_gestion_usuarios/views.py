@@ -397,7 +397,7 @@ def cargar_info_fiebre_a(request):
                         historial = historial[int(0)]
                         historial.si_o_no = 'si'
                         historial.fecha_aplicacion_fiebre_a = infForm['fecha_aplicacion_fiebre_a']
-                        historial.vacuna_externa=True
+                        historial.vacuna_externa_fiebre=True
                         historial.save()
                         #retorno
                     

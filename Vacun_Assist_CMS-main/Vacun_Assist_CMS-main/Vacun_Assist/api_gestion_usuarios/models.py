@@ -81,13 +81,13 @@ class HistorialCovid(models.Model):
     nombre_usuario=models.CharField(max_length=50)
     apellido_usuario=models.CharField(max_length=50)
 #    vacuna_externa_covid=models.BooleanField(null=True)
-    #fecha_primeradosis=models.DateField(blank=True, null=True)
-    #fecha_segundadosis=models.DateField(blank=True, null=True)
-    #vacuna_externa_covid_dosis_1=models.BooleanField(null=True)
-    #vacuna_externa_covid_dosis_2=models.BooleanField(null=True)
+    fecha_primeradosis=models.DateField(blank=True, null=True)
+    fecha_segundadosis=models.DateField(blank=True, null=True)
+    vacuna_externa_covid_dosis_1=models.BooleanField(null=True, blank=True)
+    vacuna_externa_covid_dosis_2=models.BooleanField(null=True, blank= True)
 
     def __str__(self):
-        return 'DNI: %s. Cantidad de dosis: %s. Primera dosis: %s. Segunda dosis: %s' % (self.usuario, self.cantidad_dosis, self.fecha_primeradosis, self.fecha_segundadosis)
+        return 'DNI: %s. Cantidad de dosis: %s. Nombre: %s, %s' % (self.usuario, self.cantidad_dosis, self.nombre_usuario, self.apellido_usuario)
 
 
 class HistorialFiebreA(models.Model):
@@ -100,7 +100,7 @@ class HistorialFiebreA(models.Model):
     
     
     def __str__(self):
-        return 'DNI: %s. Fecha: %s' % (self.usuario, self.fecha_aplicacion_fiebre_a)
+        return 'DNI: %s. Fecha: %s. Nombre: %s, %s' % (self.usuario, self.fecha_aplicacion_fiebre_a, self.nombre_usuario, self.apellido_usuario)
  
 
 class HistorialGripe(models.Model):
@@ -111,7 +111,7 @@ class HistorialGripe(models.Model):
     apellido_usuario=models.CharField(max_length=50)
 
     def __str__(self):
-        return 'DNI: %s. Fecha: %s' % (self.usuario, self.fecha_aplicacion_gripe)
+        return 'DNI: %s. Fecha: %s.  Nombre: %s, %s' % (self.usuario, self.fecha_aplicacion_gripe, self.nombre_usuario, self.apellido_usuario)
 
 
 class Administrador(models.Model):

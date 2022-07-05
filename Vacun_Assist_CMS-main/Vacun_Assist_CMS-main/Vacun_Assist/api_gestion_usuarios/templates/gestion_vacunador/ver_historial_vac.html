@@ -64,6 +64,9 @@
                         {% else %}
                             <p> <u>Fecha de aplicación</u>: A confirmar </p>
                         {% endif %}
+                        {% if historial_f.vacuna_externa_fiebre != False %}
+                            Esta dosis no fue aplicada en VacunAssist
+                        {% endif %}
                     {% else %}
                         <p> No hay historial para mostrar</p> 
                     {% endif %} 
@@ -81,6 +84,9 @@
                 {% for historial_g in historial_gripe %}  
                     {% if historial_g.fecha_aplicacion_gripe %} 
                         <p> <u>Fecha de la última aplicación</u>: {{historial_g.fecha_aplicacion_gripe}}</p>
+                    {% endif %}
+                    {% if historial_g.vacuna_externa_gripe != False %}
+                        Esta dosis no fue aplicada en VacunAssist
                     {% endif %}
                 {% endfor %}
             {% else %} 
