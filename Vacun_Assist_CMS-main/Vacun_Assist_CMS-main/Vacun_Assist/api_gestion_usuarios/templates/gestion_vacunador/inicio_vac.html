@@ -36,7 +36,42 @@
             <p></p>
             <a href="{% url 'cerrar_sesion' %}" style="color: black; "> Cerrar Sesion </a> 
         </span>
-   
+        {% else %}
+       
+        <h1 font-family: 'Open Sans';
+        font-size: 5px;
+        color: #ccc;
+        margin-bottom: 10px;
+        style="text-align:center; background-color: rgb(21, 243, 120)"
+        > 
+        Bienvenidos a Vacun Assist   </h1>  
+        <span style="float: left; border: solid 10px hsl(133, 100%, 76%); margin-left: 230px">
+            <a href="{% url 'iniciar_sesion' %}" style="color: black; "> Iniciar sesion </a> &nbsp; &nbsp;
+         <a href="{% url 'registro' %}" style="color: black;" >  Registrate!</a>
+    
+            <em>
+            <b>  
+        <p >   <img src="https://statics-diariomedico.uecdn.es/cms/2021-04/0428%20vacunatorio.jpg"
+               width="550"
+               height="350"
+               style="float: left; font-style: oblique; text-decoration: underline">
+               Vas a poder sacar turno de:</br> </br> </br>
+               <ul>
+                <li>COVID</li>
+                <li>FIEBRE AMARILLA</li>
+                <li>GRIPE</li>
+             
+                </ul>
+        </p>
+            </em>
+             </b> 
+
+        </span>
+    
+     
+          
+        
+        
         {% endif %}
 
     </body>

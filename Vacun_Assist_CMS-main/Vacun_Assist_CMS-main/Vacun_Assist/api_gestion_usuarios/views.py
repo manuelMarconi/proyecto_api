@@ -27,20 +27,28 @@ from datetime import date, datetime, timedelta, time
 
 ############
 ###DEMO 1###
-############ 
+############
+ 
 def inicio(request):
-    
+    ##deberiamos usar un html para la pantalla principal y otro para el inicio del usuario
     if request.user.is_authenticated:
-        if(tieneTurno(request,"Fiebre amarilla")):
-            return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
-        return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
+        us=list(Usuario.objects.filter(email=request.user.email))
+        if len(us)>0:
+            if(tieneTurno(request,"Fiebre amarilla")):
+                return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":1})
+            return render(request, "gestion_usuarios/inicio.html",{"historial":tiene_historial_fiebre_a(request),"turno":0})
     return render(request, "gestion_usuarios/inicio.html")
 
+
 def inicio_vacunador(request):
-    return render (request, "gestion_vacunador/inicio_vac.html")
+    if request.user.is_authenticated:
+        return render (request, "gestion_vacunador/inicio_vac.html")
+    return render(request, "gestion_usuarios/inicio.html")
 
 def inicio_admin(request):
-    return render (request, "gestion_admin/inicio_admin.html")
+    if request.user.is_authenticated:
+        return render (request, "gestion_admin/inicio_admin.html")
+    return render(request, "gestion_usuarios/inicio.html")
 
 
 @method_decorator(csrf_exempt)    
@@ -95,7 +103,6 @@ def registro(request):
     else:
         miFormulario=FormularioRegistro()
     return render(request, "autenticacion/registro.html", {"form": miFormulario})
-
 
 
 def cerrar_sesion(request):
@@ -724,7 +731,7 @@ def iniciar_sesion_vacunador(request):
                     messages.add_message(request, messages.INFO, 'Inicio de sesion Exitoso')
                     login(request, user)
                     #return redirect('inicio_vacunador')
-                    return render (request, "gestion_vacunador/inicio_vac.html")
+                    return redirect('inicio_vac')
 
                 else: # no entra nunca aca ??
                     messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
@@ -1028,12 +1035,11 @@ def inicio_administrador(request):
              
                     messages.add_message(request, messages.INFO, 'Inicio de sesion Exitoso')
                     login(request, user)
-                    #return redirect('inicio_vacunador')
-                    return render (request, "gestion_admin/inicio_admin.html")
+                    return redirect('inicio_admin')
 
                 else: # no entra nunca aca ??
                     messages.add_message(request, messages.ERROR, 'ERROR el usuario no se encuentra autenticado') 
-                    return render(request, "autenticacion/login_admin.html")          
+                    return render(request, "gestion_admin/inicio_admin.html")          
             else:
                 messages.add_message(request, messages.ERROR, 'ERROR usuario y/o contraseña incorrecto')
                 return render(request, "autenticacion/login_admin.html")
@@ -1062,7 +1068,6 @@ def informe_cantidad_persona(request):
 
     return render(request, "gestion_admin/informe_registro.html")
     
-
 
 
 def informe_personas_registradas(request): 
@@ -1265,7 +1270,6 @@ def asignar_turno_fiebre_a(request):
         return render(request,"gestion_admin/asignar_fiebre.html", {"turnos": turnos}) #llamaba a turnos_del_dia
     
     return render(request, "gestion_admin/asignar_fiebre.html")
-
 
 
 def informe_covid(request): #NO SE USA
